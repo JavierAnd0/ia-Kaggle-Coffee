@@ -12,7 +12,7 @@ Proyecto medio: clasificación de enfermedades en hojas de café con el dataset 
 pip install -r requirements.txt
 jupyter notebook notebooks/proyecto_medio.ipynb   # o abrir en Colab
 ```
-Descarga con `kagglehub` (requiere `KAGGLE_USERNAME` y `KAGGLE_KEY`). `config.FAST_MODE = True` para pruebas rápidas.
+El dataset está en `data/` (carpetas `coffee___healthy` 791, `coffee___rust` 602, `coffee___red_spider_mite` 167). Grupo = planta (`C10P10E1.jpg` -> `C10P10`, 390 plantas) para evitar leakage. `config.FAST_MODE = True` para pruebas rápidas.
 
 ## Estado
 Código escrito pero **aún no ejecutado contra el dataset real** (sin acceso a Kaggle desde el entorno de desarrollo). La carga de etiquetas del notebook (sección 0) debe ajustarse tras inspeccionar la estructura real.
