@@ -75,7 +75,11 @@ def load_images(df, size: int = GAN_SIZE) -> np.ndarray:
 
 def make_synthetic_df(gan: "CGAN", class_name: str, class_id: int, n: int, out_dir, out_size: int = 224):
     """Genera `n` imágenes de la clase, las guarda como PNG (reescaladas) y devuelve el DataFrame
-    [filepath, label, group] para añadirlo SOLO al conjunto de entrenamiento."""
+    [filepath, label, group] para añadirlo SOLO al conjunto de entrenamiento.
+
+    Limitación: la GAN trabaja a 64x64 y las imágenes se reescalan a 224 (borrosas); el clasificador
+    podría aprender "borroso = clase minoritaria". Por eso se compara contra un control de
+    sobremuestreo con imágenes reales (`train.run_experiments`, variante 4b)."""
     import pandas as pd
     from pathlib import Path
     from PIL import Image

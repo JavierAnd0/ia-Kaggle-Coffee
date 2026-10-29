@@ -29,7 +29,9 @@ def build_model(hp, num_classes: int) -> tf.keras.Model:
 
 def unfreeze_top(model: tf.keras.Model, n_layers: int = 30, lr: float = 1e-5) -> tf.keras.Model:
     """Fine-tuning: descongela las últimas `n_layers` del backbone (sin BatchNorm) y recompila."""
-    for layer in model.layers[-(n_layers + 4):]:      # +4: cabeza (GAP, dropout, 2 densas)
+    head_start = next(i for i, l in enumerate(model.layers)
+                      if isinstance(l, tf.keras.layers.GlobalAveragePooling2D))
+    for layer in model.layers[max(0, head_start - n_layers):head_start]:
         if not isinstance(layer, tf.keras.layers.BatchNormalization):
             layer.trainable = True
     model.compile(tf.keras.optimizers.Adam(lr), "sparse_categorical_crossentropy", metrics=["accuracy"])

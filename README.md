@@ -10,7 +10,7 @@ Proyecto medio: clasificación de enfermedades en hojas de café con el dataset 
 4. **Mejoras y evaluación final** (`src/train.py`): pesos de clase, fine-tuning y GAN (imágenes sintéticas solo en train), comparadas sobre validación; el test se usa una sola vez.
 
 ## Resultados guardados (`results/`)
-- `best_hp.json` y `cv_results.csv`: resultados de Hyperband y de la validación cruzada, ejecutados en Colab (transcritos de la salida del notebook).
+- `best_hp.json` y `cv_results.csv`: resultados de Hyperband y de la validación cruzada, ejecutados en Colab (archivos originales descargados de Colab).
 - `ablation_val.csv` y `test_report.txt`: se generan al ejecutar las secciones finales del notebook.
 
 ## Uso
