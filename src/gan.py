@@ -63,5 +63,31 @@ class CGAN:
 
     def sample(self, class_id: int, n: int) -> np.ndarray:
         z = tf.random.normal((n, LATENT))
-        img = self.g([z, np.full((n, 1), class_id, "int32")], training=False).numpy()
+        img = self.g([z, tf.fill((n, 1), tf.constant(class_id, tf.int32))], training=False).numpy()
         return ((img + 1) * 127.5).clip(0, 255).astype("uint8")
+
+
+def load_images(df, size: int = GAN_SIZE) -> np.ndarray:
+    """Carga las imágenes de `df` (usar solo TRAIN) a `size`x`size` uint8 para entrenar la GAN."""
+    return np.stack([tf.keras.utils.img_to_array(tf.keras.utils.load_img(p, target_size=(size, size)))
+                     for p in df["filepath"]]).astype("uint8")
+
+
+def make_synthetic_df(gan: "CGAN", class_name: str, class_id: int, n: int, out_dir, out_size: int = 224):
+    """Genera `n` imágenes de la clase, las guarda como PNG (reescaladas) y devuelve el DataFrame
+    [filepath, label, group] para añadirlo SOLO al conjunto de entrenamiento.
+
+    Limitación: la GAN trabaja a 64x64 y las imágenes se reescalan a 224 (borrosas); el clasificador
+    podría aprender "borroso = clase minoritaria". Por eso se compara contra un control de
+    sobremuestreo con imágenes reales (`train.run_experiments`, variante 4b)."""
+    import pandas as pd
+    from pathlib import Path
+    from PIL import Image
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for i, img in enumerate(gan.sample(class_id, n)):
+        path = out / f"synth_{class_name}_{i:04d}.png"
+        Image.fromarray(img).resize((out_size, out_size), Image.BICUBIC).save(path)
+        rows.append({"filepath": str(path), "label": class_name, "group": f"synth_{i}"})
+    return pd.DataFrame(rows)

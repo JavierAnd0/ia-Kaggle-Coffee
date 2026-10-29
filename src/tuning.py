@@ -1,5 +1,6 @@
 """Topic 2: búsqueda de hiperparámetros con Hyperband (keras_tuner). Se evalúa en val, nunca en test."""
 import json
+from pathlib import Path
 
 import keras_tuner as kt
 import tensorflow as tf
@@ -32,3 +33,18 @@ def run_hyperband(train_df, val_df, max_epochs: int | None = None):
     RESULTS_DIR.mkdir(exist_ok=True)
     (RESULTS_DIR / "best_hp.json").write_text(json.dumps(best.values, indent=2))
     return best
+
+
+def load_best_hp(path=None):
+    """Recarga los mejores hiperparámetros guardados por `run_hyperband` (evita repetir la búsqueda).
+
+    Ignora las claves internas `tuner/*` del JSON y exige los hiperparámetros del modelo.
+    """
+    path = Path(path) if path else RESULTS_DIR / "best_hp.json"
+    values = {k: v for k, v in json.loads(path.read_text()).items() if not k.startswith("tuner/")}
+    missing = {"backbone", "dropout", "units", "learning_rate", "optimizer"} - values.keys()
+    if missing:
+        raise ValueError(f"{path} no contiene: {sorted(missing)}")
+    hp = kt.HyperParameters()
+    hp.values.update(values)
+    return hp

@@ -1,0 +1,16 @@
+Variante: 4b_+oversampling_real
+
+                 precision    recall  f1-score   support
+
+        healthy       0.78      0.83      0.81       112
+red_spider_mite       0.28      0.52      0.36        21
+           rust       0.77      0.55      0.64        91
+
+       accuracy                           0.69       224
+      macro avg       0.61      0.63      0.60       224
+   weighted avg       0.73      0.69      0.70       224
+
+                      pred_healthy  pred_red_spider_mite  pred_rust
+real_healthy                    93                     9         10
+real_red_spider_mite             5                    11          5
+real_rust                       21                    20         50

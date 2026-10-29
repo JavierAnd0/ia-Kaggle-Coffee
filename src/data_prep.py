@@ -69,6 +69,23 @@ def eda(df: pd.DataFrame) -> None:
         print("duplicados exactos:", df["md5"].duplicated().sum())
 
 
+def _merged_groups(df: pd.DataFrame) -> pd.Series:
+    """Une planta (`group`) y duplicados exactos (`md5`) en componentes conexas, de modo que
+    una planta y todas sus copias caigan siempre en el mismo split."""
+    parent: dict = {}
+
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for g, h in zip(df["group"], df["md5"] if "md5" in df else df["group"]):
+        parent[find(("g", g))] = find(("h", h))
+    return pd.Series([str(find(("g", g))) for g in df["group"]], index=df.index)
+
+
 def split_dataset(df: pd.DataFrame, seed: int = SEED, save: bool = True):
     """70/15/15 por grupos (sin leakage entre fotos de la misma planta/duplicados).
 
@@ -76,8 +93,7 @@ def split_dataset(df: pd.DataFrame, seed: int = SEED, save: bool = True):
     El split se hace ANTES de cualquier augmentation, GAN o normalización ajustada.
     """
     df = df.reset_index(drop=True).copy()
-    groups = df["group"] if "md5" not in df else df["group"] + "|" + df["md5"].where(
-        df["md5"].duplicated(keep=False), "")
+    groups = _merged_groups(df)
     gss = GroupShuffleSplit(n_splits=1, train_size=TRAIN_FRAC, random_state=seed)
     tr_idx, rest_idx = next(gss.split(df, df["label"], groups))
     rest = df.iloc[rest_idx]
