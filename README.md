@@ -11,7 +11,8 @@ Proyecto medio: clasificación de enfermedades en hojas de café con el dataset 
 
 ## Resultados guardados (`results/`)
 - `best_hp.json` y `cv_results.csv`: resultados de Hyperband y de la validación cruzada, ejecutados en Colab (archivos originales descargados de Colab).
-- `ablation_val.csv` y `test_report.txt`: se generan al ejecutar las secciones finales del notebook.
+- `ablation_val.csv` y `test_report.txt`: comparación de variantes en validación y reporte final en test (variante elegida: sobremuestreo con imágenes reales; exactitud 0,69, F1 macro 0,60).
+- `docs/informe_proyecto_medio.docx`: informe académico con todos los resultados.
 
 ## Uso
 ```bash
@@ -21,4 +22,4 @@ jupyter notebook notebooks/proyecto_medio.ipynb   # o abrir en Colab
 El dataset está en `data/` (carpetas `coffee___healthy` 791, `coffee___rust` 602, `coffee___red_spider_mite` 167). Grupo = planta (`C10P10E1.jpg` -> `C10P10`, 390 plantas) para evitar leakage. `config.FAST_MODE = True` para pruebas rápidas.
 
 ## Estado
-Hyperband y la validación cruzada se ejecutaron en Colab (T4). Las mejoras (pesos de clase, fine-tuning, GAN) y la evaluación final están implementadas y probadas con un subconjunto pequeño, pendientes de ejecutarse completas.
+Ejecutado de punta a punta en Colab (T4): Hyperband, validación cruzada, comparación de mejoras y evaluación en test. Pendiente solo completar en el informe los datos del autor (nombre, asignatura, docente, fecha) y revisar las referencias.
