@@ -1,0 +1,8 @@
+{
+  "backbone": "mobilenetv2",
+  "dropout": 0.30000000000000004,
+  "units": 128,
+  "learning_rate": 0.007863429392778105,
+  "optimizer": "adam",
+  "batch_size": 16
+}

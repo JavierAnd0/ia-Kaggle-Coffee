@@ -6,3 +6,4 @@ tuner_logs/
 __pycache__/
 .ipynb_checkpoints/
 .venv/
+data_synth/

@@ -32,3 +32,11 @@ def run_hyperband(train_df, val_df, max_epochs: int | None = None):
     RESULTS_DIR.mkdir(exist_ok=True)
     (RESULTS_DIR / "best_hp.json").write_text(json.dumps(best.values, indent=2))
     return best
+
+
+def load_best_hp(path=None):
+    """Recarga los mejores hiperparámetros guardados por `run_hyperband` (evita repetir la búsqueda)."""
+    path = path or RESULTS_DIR / "best_hp.json"
+    hp = kt.HyperParameters()
+    hp.values.update(json.loads(open(path).read()))
+    return hp
