@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import AvisoOrientacion from '../components/AvisoOrientacion.astro';
+import { base, NOMBRE_CORTO } from '../lib/guia';
+import metricas from '../data/metricas.json';
+import type { Clase } from '../lib/predictor/tipos';
+
+export const prerender = true;
+const clases: Clase[] = ['healthy', 'red_spider_mite', 'rust'];
+const pct = (x: number) => `${Math.round(x * 100)} %`;
+---
+<Base titulo="Sobre la herramienta" descripcion="Cómo se entrenó el programa, qué tanto acierta y cuáles son sus límites.">
+  <h1>Sobre la herramienta</h1>
+  <AvisoOrientacion />
+
+  <section class="ficha">
+    <h2>Qué es</h2>
+    <p>Es un programa de inteligencia artificial que compara la foto de una hoja con fotos que ya conoce. Se hizo como proyecto académico y se entrenó con el conjunto de datos público <strong>RoCoLe</strong>: {metricas.dataset.imagenes} fotos de hojas de <strong>café {metricas.dataset.tipo_cafe}</strong> tomadas en un mismo cultivo.</p>
+    <p>Solo conoce tres casos: <strong>hoja sana</strong> ({metricas.dataset.clases.healthy} fotos), <strong>roya</strong> ({metricas.dataset.clases.rust}) y <strong>arañita roja</strong> ({metricas.dataset.clases.red_spider_mite}).</p>
+  </section>
+
+  <section class="ficha">
+    <h2>Qué tanto acierta</h2>
+    <p>Con {metricas.prueba.imagenes} fotos que el programa nunca había visto, acertó en <strong>{pct(metricas.prueba.exactitud)}</strong>. Es decir, se equivoca en cerca de 3 de cada 10 fotos.</p>
+    <div class="scroll-x" tabindex="0" role="region" aria-label="Tabla de resultados por caso">
+      <table class="tabla-datos">
+        <caption class="nota" style="text-align:left;padding-bottom:0.4rem">Resultado por caso (fotos de prueba)</caption>
+        <thead><tr><th>Caso</th><th>Fotos</th><th>Lo encuentra</th><th>Acierta cuando lo dice</th></tr></thead>
+        <tbody>
+          {clases.map((c) => (
+            <tr>
+              <td>{NOMBRE_CORTO[c]}</td>
+              <td>{metricas.prueba.por_clase[c].soporte}</td>
+              <td>{pct(metricas.prueba.por_clase[c].recall)}</td>
+              <td>{pct(metricas.prueba.por_clase[c].precision)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota" style="margin-top:0.8rem">«Lo encuentra» = de cada 100 hojas con ese problema, cuántas detecta. «Acierta cuando lo dice» = de cada 100 veces que dice ese problema, cuántas son ciertas. La arañita roja es la más difícil: solo hubo 21 fotos de prueba.</p>
+  </section>
+
+  <section class="ficha">
+    <h2>Sus límites</h2>
+    <ul>
+      <li><strong>Café robusta, no arábica.</strong> La mayor parte del café de Colombia es arábica (Castillo, Caturra, Colombia, Tabi). El programa no se ha probado con esas hojas ni con cultivos colombianos, y puede equivocarse más.</li>
+      <li><strong>Solo tres casos.</strong> Otras enfermedades, plagas o faltas de nutrientes pueden confundirse con alguno de los tres.</li>
+      <li><strong>Un solo cultivo y un solo celular</strong> produjeron las fotos de entrenamiento. Otras luces, fondos o cámaras pueden cambiar el resultado.</li>
+      <li><strong>Cuando no está seguro, lo dice.</strong> Si dos opciones se parecen mucho o el porcentaje es bajo, responde «no estoy seguro» en lugar de adivinar.</li>
+    </ul>
+  </section>
+
+  <section class="ficha">
+    <h2>Validación con datos del proyecto</h2>
+    <p class="nota">Exactitud en validación cruzada (varias formas de repartir las fotos para evaluar):</p>
+    <div class="scroll-x" tabindex="0" role="region" aria-label="Tabla de validación cruzada">
+      <table class="tabla-datos">
+        <thead><tr><th>Método</th><th>Exactitud</th><th>F1 macro</th></tr></thead>
+        <tbody>
+          {metricas.validacion_cruzada.map((m) => (
+            <tr><td>{m.metodo}</td><td>{m.exactitud.toFixed(2)}</td><td>{m.f1_macro.toFixed(2)}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota" style="margin-top:0.8rem">{metricas.nota}</p>
+  </section>
+
+  <section class="ficha">
+    <h2>Sobre el contenido de las guías</h2>
+    <p>Las guías resumen información de fuentes como Cenicafé, la Federación Nacional de Cafeteros y entidades de sanidad vegetal. Fue recopilada por un asistente de inteligencia artificial a partir de resultados de búsqueda y <strong>debe ser revisada por un ingeniero agrónomo antes de usarse con productores</strong>. Versión del contenido: {base.version} ({base.generado}).</p>
+  </section>
+</Base>

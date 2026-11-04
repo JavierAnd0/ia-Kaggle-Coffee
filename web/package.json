@@ -1,0 +1,35 @@
+{
+  "name": "hoja-de-cafe-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Orientación inicial sobre enfermedades de la hoja de café a partir de una foto (Astro + React + Node).",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "start": "node ./dist/server/entry.mjs",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/node": "9.5.5",
+    "@astrojs/react": "4.4.2",
+    "@fontsource/atkinson-hyperlegible": "^5.2.0",
+    "@fontsource/fraunces": "^5.2.0",
+    "astro": "5.18.2",
+    "onnxruntime-node": "^1.31.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.34.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}

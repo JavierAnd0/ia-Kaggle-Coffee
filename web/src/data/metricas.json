@@ -1,0 +1,88 @@
+{
+  "dataset": {
+    "nombre": "RoCoLe",
+    "tipo_cafe": "robusta (Coffea canephora)",
+    "imagenes": 1560,
+    "plantas": 390,
+    "clases": {
+      "healthy": 791,
+      "rust": 602,
+      "red_spider_mite": 167
+    }
+  },
+  "validacion_cruzada": [
+    {
+      "metodo": "K-fold",
+      "exactitud": 0.722,
+      "f1_macro": 0.58
+    },
+    {
+      "metodo": "K-fold estratificado",
+      "exactitud": 0.735,
+      "f1_macro": 0.594
+    },
+    {
+      "metodo": "K-fold estratificado y agrupado por planta",
+      "exactitud": 0.725,
+      "f1_macro": 0.593
+    },
+    {
+      "metodo": "Hold-out",
+      "exactitud": 0.754,
+      "f1_macro": 0.608
+    },
+    {
+      "metodo": "Monte Carlo",
+      "exactitud": 0.721,
+      "f1_macro": 0.612
+    }
+  ],
+  "prueba": {
+    "imagenes": 224,
+    "exactitud": 0.69,
+    "f1_macro": 0.6,
+    "por_clase": {
+      "healthy": {
+        "precision": 0.78,
+        "recall": 0.83,
+        "f1": 0.81,
+        "soporte": 112
+      },
+      "red_spider_mite": {
+        "precision": 0.28,
+        "recall": 0.52,
+        "f1": 0.36,
+        "soporte": 21
+      },
+      "rust": {
+        "precision": 0.77,
+        "recall": 0.55,
+        "f1": 0.64,
+        "soporte": 91
+      }
+    },
+    "matriz": {
+      "healthy": [
+        93,
+        9,
+        10
+      ],
+      "red_spider_mite": [
+        5,
+        11,
+        5
+      ],
+      "rust": [
+        21,
+        20,
+        50
+      ]
+    },
+    "orden_matriz": [
+      "healthy",
+      "red_spider_mite",
+      "rust"
+    ]
+  },
+  "nota": "Métricas del proyecto de clase (variante 4b). Se recalcularán al exportar el modelo final."
+}

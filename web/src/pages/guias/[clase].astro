@@ -1,0 +1,28 @@
+---
+import AvisoOrientacion from '../../components/AvisoOrientacion.astro';
+import GuiaClase from '../../components/GuiaClase';
+import Base from '../../layouts/Base.astro';
+import { base, fuentesDe, obtenerGuia } from '../../lib/guia';
+
+export const prerender = true;
+export function getStaticPaths() {
+  return (['healthy', 'rust', 'red_spider_mite'] as const).map((clase) => ({ params: { clase } }));
+}
+const { clase } = Astro.params as { clase: 'healthy' | 'rust' | 'red_spider_mite' };
+const guia = obtenerGuia(clase);
+const contactos = base.contactos.filter((c) => c.pais === 'Colombia');
+---
+<Base titulo={guia.nombre_comun} descripcion={guia.resumen}>
+  <p><a href="/guias">← Todas las guías</a></p>
+  <h1>{guia.nombre_comun}</h1>
+  {guia.nombre_cientifico && <p class="nota"><em>{guia.nombre_cientifico}</em></p>}
+  <p class="lead">{guia.resumen}</p>
+  <AvisoOrientacion />
+  <GuiaClase guia={guia} fuentes={fuentesDe(guia.fuentes)} mostrarSenales />
+  <section class="ficha">
+    <h3>¿A quién acudir?</h3>
+    <ul>
+      {contactos.map((c) => <li><strong>{c.entidad}.</strong> {c.como_contactar}</li>)}
+    </ul>
+  </section>
+</Base>
