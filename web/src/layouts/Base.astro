@@ -1,0 +1,46 @@
+---
+import '@fontsource/fraunces/600.css';
+import '@fontsource/fraunces/700.css';
+import '@fontsource/atkinson-hyperlegible/400.css';
+import '@fontsource/atkinson-hyperlegible/700.css';
+import '../styles/global.css';
+import { Hoja } from '../components/Iconos';
+
+interface Props { titulo: string; descripcion?: string }
+const { titulo, descripcion = 'Orientación inicial sobre la hoja de café a partir de una foto.' } = Astro.props;
+const ruta = Astro.url.pathname;
+const activo = (p: string) => (p === '/' ? ruta === '/' : ruta.startsWith(p));
+---
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content="#1f4d3a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{titulo} · Cartilla de la Hoja</title>
+  </head>
+  <body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <header class="cabecera">
+      <div class="contenedor">
+        <a class="marca" href="/"><Hoja width="36" height="36" />Cartilla de la Hoja</a>
+        <nav class="nav" aria-label="Principal">
+          <a href="/" aria-current={activo('/') ? 'page' : undefined}>Inicio</a>
+          <a href="/guias" aria-current={activo('/guias') ? 'page' : undefined}>Guías</a>
+          <a href="/modelo" aria-current={activo('/modelo') ? 'page' : undefined}>Acerca de</a>
+        </nav>
+      </div>
+    </header>
+    <main id="contenido" class="contenedor">
+      <slot />
+    </main>
+    <footer class="pie">
+      <div class="contenedor">
+        <p><strong>Orientación inicial, no un diagnóstico.</strong> Confirme siempre con un técnico de extensión de la Federación Nacional de Cafeteros, Cenicafé, el ICA o la entidad de su país.</p>
+        <p>Proyecto académico. El modelo se entrenó con el conjunto de datos público RoCoLe (café robusta).</p>
+      </div>
+    </footer>
+  </body>
+</html>

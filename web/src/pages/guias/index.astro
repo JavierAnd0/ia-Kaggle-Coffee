@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import AvisoOrientacion from '../../components/AvisoOrientacion.astro';
+import { base, NOMBRE_CORTO } from '../../lib/guia';
+import type { Clase } from '../../lib/predictor/tipos';
+
+export const prerender = true;
+const claves: Clase[] = ['rust', 'red_spider_mite', 'healthy'];
+---
+<Base titulo="Guías" descripcion="Guías sencillas sobre roya, arañita roja y hoja sana.">
+  <h1>Guías</h1>
+  <p class="lead">Lea con calma qué es cada problema, cómo se reconoce y qué hacer. Funcionan sin enviar ninguna foto.</p>
+  <AvisoOrientacion />
+  <div class="guia-enlaces">
+    {claves.map((c) => (
+      <a class="ficha" href={`/guias/${c}`} style="text-decoration:none;color:inherit">
+        <h2>{NOMBRE_CORTO[c]}</h2>
+        <p>{base.clases[c].resumen}</p>
+        <p><strong style="color:var(--verde)">Leer la guía →</strong></p>
+      </a>
+    ))}
+  </div>
+</Base>

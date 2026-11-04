@@ -1,0 +1,257 @@
+{
+  "version": "1",
+  "generado": "2026-11-04",
+  "advertencia_general": "Esta es una orientación inicial hecha por un programa de computador. No es un diagnóstico. Confirme siempre con un técnico: el Servicio de Extensión de la Federación Nacional de Cafeteros, Cenicafé, el ICA o la entidad de su país.",
+  "clases": {
+    "healthy": {
+      "nombre_comun": "Hoja sana",
+      "nombre_cientifico": null,
+      "resumen": "La hoja no muestra señales claras de roya ni de arañita roja. Aun así, siga revisando sus plantas con frecuencia.",
+      "como_reconocerla": [
+        "Color verde parejo en toda la hoja.",
+        "Sin manchas amarillas redondas.",
+        "Sin polvillo anaranjado por el envés (la cara de abajo).",
+        "Sin zonas bronceadas, rojizas o secas.",
+        "Hoja firme, sin caída anormal."
+      ],
+      "que_hacer_hoy": [
+        "Revise otras hojas y otras plantas del lote, arriba y abajo.",
+        "Mire también el envés (la cara de abajo) de varias hojas.",
+        "Vuelva a revisar el lote con regularidad, sobre todo en los bordes.",
+        "Mantenga la fertilización y el manejo de arvenses (malezas) recomendados.",
+        "Anote lo que observa para comparar en la próxima revisión."
+      ],
+      "prevencion": [
+        "Siembre variedades resistentes a la roya con semilla certificada.",
+        "Mantenga las plantas bien nutridas y vigorosas.",
+        "Controle las arvenses (malezas) del lote.",
+        "Revise los bordes del lote en épocas secas."
+      ],
+      "cuando_llamar_al_tecnico": [
+        "Si aparecen manchas, polvillo o bronceado en varias plantas.",
+        "Si hay caída de hojas sin causa clara.",
+        "Si tiene dudas, aunque la hoja se vea sana."
+      ],
+      "productos": {
+        "tipos": [],
+        "nota_registro": "No se necesita aplicar productos si la hoja está sana."
+      },
+      "contexto_colombia": "Una hoja sana en una foto no garantiza que todo el lote lo esté. La mayoría del café colombiano es arábica y el modelo fue entrenado con hojas de robusta, así que el resultado puede equivocarse.",
+      "fuentes": [
+        "f4",
+        "f2"
+      ]
+    },
+    "rust": {
+      "nombre_comun": "Roya del cafeto",
+      "nombre_cientifico": "Hemileia vastatrix",
+      "resumen": "Es una enfermedad causada por un hongo que ataca las hojas. Puede hacer caer las hojas y bajar la cosecha.",
+      "como_reconocerla": [
+        "Manchas redondas pequeñas, de 2 a 4 mm, amarillas.",
+        "Las manchas aparecen sobre todo en el envés (la cara de abajo).",
+        "Polvillo amarillo-anaranjado sobre las manchas.",
+        "Manchas amarillas también visibles por el haz (la cara de arriba).",
+        "Las hojas muy afectadas se caen."
+      ],
+      "que_hacer_hoy": [
+        "Revise varias hojas de varias plantas, mirando el envés.",
+        "Anote cuántas plantas y qué parte del lote están afectadas.",
+        "Averigüe qué variedad tiene sembrada; algunas son resistentes.",
+        "Llame al técnico de extensión para confirmar y planear el manejo.",
+        "Mantenga bien nutridas y vigorosas las plantas, como recomienda Cenicafé.",
+        "Si va a aplicar un producto, use solo uno con registro y siga la etiqueta."
+      ],
+      "prevencion": [
+        "Siembre variedades resistentes con semilla certificada.",
+        "Mantenga las plantas vigorosas y con buena nutrición.",
+        "Maneje arvenses (malezas) e insectos del cultivo.",
+        "No dependa solo de fungicidas; combine varias prácticas.",
+        "Cuide el manejo del sombrío y la fertilización."
+      ],
+      "cuando_llamar_al_tecnico": [
+        "Si ve manchas con polvillo en varias plantas.",
+        "Si su variedad es resistente y aun así aparece roya.",
+        "Si hay mucha caída de hojas.",
+        "Antes de comprar o aplicar cualquier fungicida."
+      ],
+      "productos": {
+        "tipos": [
+          {
+            "tipo": "Fungicidas de contacto a base de cobre",
+            "para_que": "Proteger la hoja contra el hongo de la roya.",
+            "advertencia": "Use solo productos con registro ICA vigente para café y siga la etiqueta."
+          },
+          {
+            "tipo": "Fungicidas sistémicos (triazoles y estrobilurinas)",
+            "para_que": "Proteger o curar la hoja desde adentro de la planta.",
+            "advertencia": "Los productos autorizados cambian con el tiempo; pregunte al técnico cuáles están vigentes y cómo alternarlos."
+          }
+        ],
+        "nota_registro": "Use solo productos con registro vigente ante la autoridad (en Colombia, el ICA) para café. Lea y siga la etiqueta y use el equipo de protección."
+      },
+      "contexto_colombia": "Cenicafé recomienda como manejo más eficaz sembrar variedades resistentes como Castillo, Cenicafé 1 y Tabi con semilla certificada. Caturra y Típica son susceptibles (se enferman fácilmente). La roya puede aparecer en algunas plantas de Castillo. La mayoría del café colombiano es arábica y el modelo fue entrenado con robusta, por lo que es solo una guía.",
+      "fuentes": [
+        "f2",
+        "f5",
+        "f6",
+        "f4",
+        "f8"
+      ]
+    },
+    "red_spider_mite": {
+      "nombre_comun": "Arañita roja (ácaro rojo del cafeto)",
+      "nombre_cientifico": "Oligonychus yothersi (en Colombia, según Cenicafé)",
+      "resumen": "Es un ácaro muy pequeño que chupa la hoja y la pone bronceada. Aumenta en épocas secas y calurosas.",
+      "como_reconocerla": [
+        "Hojas con color bronceado o rojizo.",
+        "El color es más fuerte cerca de las nervaduras.",
+        "Se ve más en lotes con épocas secas o polvo.",
+        "El ataque suele empezar en los bordes del cafetal.",
+        "Con lupa se ven puntos diminutos y huevos en la hoja."
+      ],
+      "que_hacer_hoy": [
+        "Revise varias hojas de varias plantas, sobre todo en los bordes.",
+        "Mire hojas por ambas caras; use lupa si puede.",
+        "Observe si hay mariquitas pequeñas, que comen estos ácaros.",
+        "Evite aplicar insecticidas sin consultar; pueden dañar los enemigos naturales.",
+        "Llame al técnico de extensión para confirmar el problema.",
+        "Siga su consejo antes de usar cualquier producto."
+      ],
+      "prevencion": [
+        "Vigile los bordes del cafetal, donde suele empezar el ataque.",
+        "Esté atento en épocas secas y de calor.",
+        "Proteja las mariquitas y otros enemigos naturales de la plaga.",
+        "Revise el lote con regularidad para actuar a tiempo."
+      ],
+      "cuando_llamar_al_tecnico": [
+        "Si el bronceado se extiende a varias plantas.",
+        "Si hay muchas hojas bronceadas en época seca.",
+        "Antes de comprar o aplicar cualquier producto."
+      ],
+      "productos": {
+        "tipos": [
+          {
+            "tipo": "Acaricidas (productos contra ácaros)",
+            "para_que": "Bajar la población de ácaros cuando el técnico lo recomiende.",
+            "advertencia": "Ejemplos usados en otro país (Costa Rica): propargita y azufre. No los use sin que un técnico confirme que están registrados para café en su país."
+          }
+        ],
+        "nota_registro": "Use solo productos con registro vigente ante la autoridad (en Colombia, el ICA) para café. Lea y siga la etiqueta y use el equipo de protección."
+      },
+      "contexto_colombia": "Las poblaciones de arañita roja suelen bajar cuando llegan las lluvias y suben con sequía y altas temperaturas. Cenicafé reporta que daña más con infestaciones altas, y señala mariquitas como enemigos naturales. La mayoría del café colombiano es arábica y el modelo fue entrenado con robusta, por lo que es solo una guía.",
+      "fuentes": [
+        "f1",
+        "f9",
+        "f10",
+        "f7"
+      ]
+    }
+  },
+  "contactos": [
+    {
+      "pais": "Colombia",
+      "entidad": "Federación Nacional de Cafeteros de Colombia - Servicio de Extensión (Comité Departamental de Cafeteros)",
+      "como_contactar": "Acuda al comité departamental o a la cooperativa de caficultores de su zona, o visite federaciondecafeteros.org."
+    },
+    {
+      "pais": "Colombia",
+      "entidad": "Cenicafé (centro de investigación del café)",
+      "como_contactar": "Sitio oficial: cenicafe.org"
+    },
+    {
+      "pais": "Colombia",
+      "entidad": "ICA (Instituto Colombiano Agropecuario)",
+      "como_contactar": "Sitio oficial: ica.gov.co. Consulte allí si un producto tiene registro vigente."
+    },
+    {
+      "pais": "Perú",
+      "entidad": "SENASA e INIA",
+      "como_contactar": "Sitios oficiales: senasa.gob.pe e inia.gob.pe"
+    },
+    {
+      "pais": "México",
+      "entidad": "SENASICA",
+      "como_contactar": "Sitio oficial: gob.mx/senasica"
+    },
+    {
+      "pais": "Centroamérica",
+      "entidad": "PROMECAFE / IICA",
+      "como_contactar": "Consulte la institución cafetera o el ministerio de agricultura de su país."
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "f1",
+      "titulo": "Aprenda a manejar la arañita roja del café (Avance Técnico 436)",
+      "entidad": "Cenicafé",
+      "url": "https://biblioteca.cenicafe.org/jspui/bitstream/10778/473/1/avt0436.pdf",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f2",
+      "titulo": "Infografía: variedades resistentes a la roya",
+      "entidad": "Cenicafé / Federación Nacional de Cafeteros",
+      "url": "https://publicaciones.cenicafe.org/index.php/infografias/article/download/2827/2742/2403",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f4",
+      "titulo": "Manejo de la roya del cafeto",
+      "entidad": "Universidad de Puerto Rico en Mayagüez",
+      "url": "https://www.uprm.edu/cafe/wp-content/uploads/sites/292/2019/05/MANEJO_DE_LA_ROYA_DEL_CAFETO.pdf",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f5",
+      "titulo": "Variedades de café resistentes a la roya (PR Variedades)",
+      "entidad": "Cenicafé",
+      "url": "https://www.cenicafe.org/es/documents/PR_Variedades.pdf",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f6",
+      "titulo": "Escala de severidad de la roya del cafeto (Avance Técnico 498)",
+      "entidad": "Cenicafé",
+      "url": "https://biblioteca.cenicafe.org/bitstream/10778/4244/1/avt0498.pdf",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f7",
+      "titulo": "Ficha técnica 44: Oligonychus coffeae (ácaro del café)",
+      "entidad": "SENASICA (México)",
+      "url": "https://prod.senasica.gob.mx/pvefcafeto/Documentos/FichasTecnicas/FTNo_44_Oligonychus_coffeae_Fase_1_v02_Sep_14.pdf",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f8",
+      "titulo": "Roya del café: la enfermedad que hace crisis en Centroamérica (cita PROMECAFE/IICA)",
+      "entidad": "Portal Frutícola (prensa, cita PROMECAFE/IICA)",
+      "url": "https://www.portalfruticola.com/noticias/2013/07/17/roya-del-cafe-la-enfermedad-que-hace-crisis-en-centroamerica/",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f9",
+      "titulo": "La arañita roja del café: vigilancia fitosanitaria y manejo oportuno",
+      "entidad": "Cenicafé",
+      "url": "https://publicaciones.cenicafe.org/index.php/avances_tecnicos/article/view/2157",
+      "consultada": "2026-11-04"
+    },
+    {
+      "id": "f10",
+      "titulo": "Brote de Oligonychus yothersi en cafetales de Costa Rica por la ceniza del volcán Poás, 2017",
+      "entidad": "Agronomía Costarricense (Universidad de Costa Rica)",
+      "url": "https://revistas.ucr.ac.cr/index.php/agrocost/article/view/40017/41324",
+      "consultada": "2026-11-04"
+    }
+  ],
+  "por_verificar": [
+    "No se pudo abrir el texto completo de los PDF de Cenicafé (el servidor bloqueó los dominios cenicafe.org); los datos provienen de resúmenes de resultados de búsqueda. Revisar contra los originales.",
+    "Fungicidas para roya (cobre, triazoles, estrobilurinas, algunos ya no disponibles): proviene de un avance técnico de Cenicafé de 2025 visto en resultados de búsqueda; no se identificó la URL exacta. Verificar con Cenicafé.",
+    "Umbrales de decisión y calendario de aplicación de fungicidas (p. ej. 60 días después de floración principal) no se incluyeron por no poder verificarse en el texto original.",
+    "Acaricidas para arañita roja: propargita y azufre vienen de un estudio de Costa Rica, no de Colombia. Verificar productos registrados por el ICA para café.",
+    "Afirmación de que se debe evitar insecticidas por efectos en enemigos naturales: Cenicafé menciona hormoligosis y depredadores; la recomendación exacta no pudo leerse.",
+    "Descripción detallada de síntomas de arañita roja (puntos y huevos con lupa) combina fuentes y requiere confirmación con el avance técnico 436.",
+    "Contactos: solo se dan los sitios oficiales por dominio; no se abrieron ni se verificaron teléfonos ni páginas de contacto. No se encontró línea nacional de atención de la FNC.",
+    "Esquema de manejo de sombrío y fertilización en roya proviene de fuentes secundarias (prensa sobre PROMECAFE/IICA y manual de la Univ. de Puerto Rico)."
+  ]
+}

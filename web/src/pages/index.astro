@@ -1,0 +1,40 @@
+---
+import AvisoOrientacion from '../components/AvisoOrientacion.astro';
+import Diagnostico from '../components/Diagnostico';
+import Base from '../layouts/Base.astro';
+
+export const prerender = true;
+const consejos = [
+  'Tome la foto de día, con buena luz, sin que su sombra tape la hoja.',
+  'Ponga una sola hoja, entera, sobre un fondo claro (la mano o un papel).',
+  'Acérquese lo suficiente para que la hoja ocupe casi toda la foto.',
+  'Si puede, tome también el envés (la cara de abajo): ahí se ve el polvillo de la roya.',
+];
+---
+<Base titulo="Revise la hoja de su café">
+  <section class="portada">
+    <span class="pliegue">Orientación inicial</span>
+    <h1>Tome una foto de la hoja de su café</h1>
+    <p class="lead">Le decimos a qué se parece y qué puede hacer hoy. En pocos pasos y desde su celular.</p>
+  </section>
+
+  <AvisoOrientacion />
+  <Diagnostico client:load />
+
+  <section>
+    <h2>Para que la foto salga bien</h2>
+    <ol class="pasos-foto">
+      {consejos.map((c) => <li>{c}</li>)}
+    </ol>
+  </section>
+
+  <section class="ficha">
+    <h2>Qué sí y qué no hace esta herramienta</h2>
+    <ul>
+      <li><strong>Sí:</strong> compara su foto con tres casos: hoja sana, roya y arañita roja.</li>
+      <li><strong>No:</strong> no reconoce otras enfermedades, ni deficiencias de nutrientes, ni sustituye al técnico.</li>
+      <li><strong>Ojo:</strong> se equivoca a veces. Úsela como una primera mirada y confirme con un técnico.</li>
+    </ul>
+    <p><a href="/modelo">Ver cómo se entrenó y qué tanto acierta</a></p>
+  </section>
+</Base>
