@@ -3,16 +3,17 @@
  *
  * Decisión de diseño: el modelo es modesto (exactitud 0,69 en prueba) y solo conoce 3 clases.
  * Por eso NO se afirma una enfermedad salvo que la probabilidad sea alta y la diferencia con la
- * segunda opción sea clara. En los demás casos se responde "no concluyente" y se pide otra foto.
+ * segunda opción sea clara (con 3 clases, p ≥ 0,6 ya garantiza esa ventaja). En los demás casos se responde "no concluyente" y se pide otra foto.
  * Los umbrales NO están calibrados con datos reales: son un punto de partida conservador que
  * debe ajustarse con las probabilidades del conjunto de validación (ver docs/DISENO_WEB.md).
  */
 import { CLASES, type Clase, type Probabilidades } from './predictor/tipos';
 
-export const UMBRALES = {
-  alta: { minimo: 0.8, margen: 0.3 },
-  media: { minimo: 0.6, margen: 0.15 },
-} as const;
+/**
+ * Con 3 clases que suman 1, p ≥ 0,6 ya implica una ventaja de ≥ 0,2 sobre la segunda opción,
+ * por eso basta un umbral mínimo (un umbral de «margen» aparte nunca tendría efecto).
+ */
+export const UMBRALES = { alta: 0.8, media: 0.6 } as const;
 
 export type Nivel = 'alta' | 'media' | 'baja';
 
@@ -55,11 +56,10 @@ export function decidir(p: Probabilidades): Veredicto {
   const pct = redondearPorcentajes(p);
   const orden = [...CLASES].sort((a, b) => p[b] - p[a]);
   const [primera, segunda] = orden;
-  const margen = p[primera] - p[segunda];
 
   let nivel: Nivel = 'baja';
-  if (p[primera] >= UMBRALES.alta.minimo && margen >= UMBRALES.alta.margen) nivel = 'alta';
-  else if (p[primera] >= UMBRALES.media.minimo && margen >= UMBRALES.media.margen) nivel = 'media';
+  if (p[primera] >= UMBRALES.alta) nivel = 'alta';
+  else if (p[primera] >= UMBRALES.media) nivel = 'media';
 
   return {
     clase: nivel === 'baja' ? null : primera,

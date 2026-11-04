@@ -67,5 +67,11 @@ def casos_paridad(model, hp, li: dict, df, por_clase: int = 2) -> list:
     ds = make_dataset(muestra, li, batch_size=1, preprocess=BACKBONES[hp.values["backbone"]][1])
     probs = model.predict(ds, verbose=0)
     nombres = sorted(li, key=li.get)
-    return [{"archivo": f, "probabilidades": {n: float(p[i]) for i, n in enumerate(nombres)}}
+    from . import config
+
+    def relativa(ruta: str) -> str:                      # los CSV pueden traer rutas absolutas (Colab)
+        ruta = Path(ruta)
+        return ruta.relative_to(config.ROOT).as_posix() if ruta.is_absolute() and config.ROOT in ruta.parents else ruta.as_posix()
+
+    return [{"archivo": relativa(f), "probabilidades": {n: float(p[i]) for i, n in enumerate(nombres)}}
             for f, p in zip(muestra["filepath"], probs)]

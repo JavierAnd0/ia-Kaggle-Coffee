@@ -18,7 +18,7 @@ const contactos = base.contactos.filter((c) => c.pais === 'Colombia');
   {guia.nombre_cientifico && <p class="nota"><em>{guia.nombre_cientifico}</em></p>}
   <p class="lead">{guia.resumen}</p>
   <AvisoOrientacion />
-  <GuiaClase guia={guia} fuentes={fuentesDe(guia.fuentes)} mostrarSenales />
+  <GuiaClase guia={guia} fuentes={fuentesDe(guia.fuentes)} mostrarSenales sana={clase === 'healthy'} />
   <section class="ficha">
     <h3>¿A quién acudir?</h3>
     <ul>

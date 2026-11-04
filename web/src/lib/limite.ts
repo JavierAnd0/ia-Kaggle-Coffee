@@ -17,3 +17,17 @@ export function permitir(clave: string, maximo = 12, ahora = Date.now()): boolea
 export function reiniciarLimite(): void {
   registro.clear();
 }
+
+/** IP del cliente. Detrás de un proxy inverso (TRUST_PROXY=1) se toma la primera de X-Forwarded-For. */
+export function claveCliente(cabeceras: Headers, direccion: string | undefined): string {
+  if (process.env.TRUST_PROXY === '1') {
+    const reenviada = cabeceras.get('x-forwarded-for')?.split(',')[0]?.trim();
+    if (reenviada) return reenviada;
+  }
+  return direccion ?? 'desconocida';
+}
+
+export function limitePorMinuto(): number {
+  const valor = Number(process.env.LIMITE_POR_MINUTO);
+  return Number.isInteger(valor) && valor > 0 ? valor : 12;
+}

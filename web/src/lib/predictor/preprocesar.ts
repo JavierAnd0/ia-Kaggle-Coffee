@@ -16,13 +16,27 @@ export interface ImagenRGB {
   alto: number;
 }
 
+/** La foto no se pudo leer (truncada, formato no soportado, demasiado grande): error del usuario, no del servicio. */
+export class ImagenInvalidaError extends Error {
+  constructor(causa: unknown) {
+    super(`Imagen inválida: ${causa instanceof Error ? causa.message : String(causa)}`);
+    this.name = 'ImagenInvalidaError';
+  }
+}
+
 export async function decodificarRGB(bytes: Uint8Array): Promise<ImagenRGB> {
-  const { data, info } = await sharp(bytes, { limitInputPixels: MAX_PIXELES })
-    .rotate() // respeta la orientación EXIF (las fotos de celular suelen venir "de lado")
-    .removeAlpha()
-    .toColourspace('srgb')
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  let resultado;
+  try {
+    resultado = await sharp(bytes, { limitInputPixels: MAX_PIXELES })
+      .rotate() // respeta la orientación EXIF (las fotos de celular suelen venir "de lado")
+      .removeAlpha()
+      .toColourspace('srgb')
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+  } catch (error) {
+    throw new ImagenInvalidaError(error);
+  }
+  const { data, info } = resultado;
   return { datos: new Uint8Array(data.buffer, data.byteOffset, data.byteLength), ancho: info.width, alto: info.height };
 }
 

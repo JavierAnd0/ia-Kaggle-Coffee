@@ -43,6 +43,8 @@ export class PredictorOnnx implements Predictor {
     const salida = await this.sesion.run({ [this.sesion.inputNames[0]]: tensor });
     const valores = salida[this.sesion.outputNames[0]].data as Float32Array;
     if (valores.length !== this.etiquetas.length) throw new Error('La salida del modelo no tiene 3 clases.');
+    const suma = valores.reduce((a, b) => a + b, 0);
+    if (Math.abs(suma - 1) > 0.02) throw new Error(`La salida del modelo no son probabilidades (suma ${suma.toFixed(3)}): ¿se exportó sin softmax?`);
     const probabilidades = Object.fromEntries(this.etiquetas.map((c, i) => [c, valores[i]])) as ResultadoPredictor['probabilidades'];
     return { probabilidades, origen: 'modelo', version: this.version };
   }

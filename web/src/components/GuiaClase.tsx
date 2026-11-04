@@ -5,10 +5,12 @@ interface Props {
   fuentes: Fuente[];
   /** Muestra "Cómo reconocerla" (en la página de guías) u oculta (ya se ve en la foto). */
   mostrarSenales?: boolean;
+  /** Hoja sana: los títulos cambian («Para evitarla» no tiene sentido). */
+  sana?: boolean;
 }
 
 /** Componente de presentación puro: lo usan la página de guías (sin JS) y el resultado (isla). */
-export default function GuiaClase({ guia, fuentes, mostrarSenales = false }: Props) {
+export default function GuiaClase({ guia, fuentes, mostrarSenales = false, sana = false }: Props) {
   return (
     <>
       <section className="ficha" aria-labelledby="g-hacer">
@@ -20,7 +22,7 @@ export default function GuiaClase({ guia, fuentes, mostrarSenales = false }: Pro
 
       {mostrarSenales && (
         <section className="ficha" aria-labelledby="g-senales">
-          <h3 id="g-senales">Cómo reconocerla</h3>
+          <h3 id="g-senales">{sana ? 'Cómo se ve una hoja sana' : 'Cómo reconocerla'}</h3>
           <ul>{guia.como_reconocerla.map((s) => (<li key={s}>{s}</li>))}</ul>
         </section>
       )}
@@ -40,7 +42,7 @@ export default function GuiaClase({ guia, fuentes, mostrarSenales = false }: Pro
       )}
 
       <section className="ficha" aria-labelledby="g-prev">
-        <h3 id="g-prev">Para evitarla</h3>
+        <h3 id="g-prev">{sana ? 'Para mantenerla sana' : 'Para evitarla'}</h3>
         <ul>{guia.prevencion.map((s) => (<li key={s}>{s}</li>))}</ul>
       </section>
 

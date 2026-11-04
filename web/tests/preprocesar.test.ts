@@ -34,3 +34,13 @@ describe('preprocesar', () => {
     expect(Math.abs(img.datos[0] - 200)).toBeLessThan(6);
   });
 });
+
+describe('errores de imagen', () => {
+  it('una foto truncada lanza ImagenInvalidaError (error del usuario, no del servicio)', async () => {
+    const { ImagenInvalidaError } = await import('../src/lib/predictor/preprocesar');
+    const completa = await sharp({ create: { width: 300, height: 200, channels: 3, background: { r: 10, g: 200, b: 10 } } }).jpeg().toBuffer();
+    const truncada = completa.subarray(0, Math.floor(completa.length / 3));
+    await expect(decodificarRGB(truncada)).rejects.toBeInstanceOf(ImagenInvalidaError);
+    await expect(decodificarRGB(new Uint8Array([0xff, 0xd8, 0xff, 0, 1, 2]))).rejects.toBeInstanceOf(ImagenInvalidaError);
+  });
+});

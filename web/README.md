@@ -25,6 +25,8 @@ npm run build && npm start
 | | `modelo` | **Exige** el modelo. Si falta, `/api/diagnostico` responde 503. Recomendado en producción. |
 | | `simulado` | Fuerza el modo de prueba. |
 | `MODEL_DIR` | ruta | Carpeta del modelo (por defecto `./model`). |
+| `TRUST_PROXY` | `1` | Detrás de un proxy inverso/HTTPS: toma la IP de `X-Forwarded-For` para el límite de uso (si no, todos comparten la IP del proxy). Actívelo **solo** si el proxy es de confianza. |
+| `LIMITE_POR_MINUTO` | número (12) | Consultas por minuto por IP. |
 | `HOST`, `PORT` | | Los usa el servidor de Astro (`node dist/server/entry.mjs`). |
 
 ## Conectar el modelo real

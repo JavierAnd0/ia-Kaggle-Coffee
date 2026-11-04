@@ -87,7 +87,7 @@ test('la API rechaza archivos que no son imágenes y fotos demasiado grandes', a
 
 test('la API limita las consultas repetidas', async ({ request }) => {
   const estados: number[] = [];
-  for (let i = 0; i < 16; i += 1) {
+  for (let i = 0; i < 40; i += 1) {
     estados.push((await request.post('/api/diagnostico', { data: Buffer.from('x'), headers: { 'Content-Type': 'image/jpeg' } })).status());
   }
   expect(estados).toContain(429);

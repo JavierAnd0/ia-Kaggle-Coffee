@@ -104,7 +104,7 @@ export default function Resultado({ datos, alReiniciar }: { datos: RespuestaDiag
       </div>
 
       {datos.guia ? (
-        <GuiaClase guia={datos.guia} fuentes={datos.fuentes} />
+        <GuiaClase guia={datos.guia} fuentes={datos.fuentes} sana={sano} />
       ) : (
         <section className="ficha" aria-labelledby="r-nc">
           <h3 id="r-nc">{GUIA_NO_CONCLUYENTE.titulo}</h3>
