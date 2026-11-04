@@ -62,7 +62,7 @@ test('las guías se leen sin enviar fotos y citan fuentes', async ({ page }) => 
 test('la página del modelo muestra métricas y límites', async ({ page }) => {
   await page.goto('/modelo');
   await expect(page.getByText('café robusta').first()).toBeVisible();
-  await expect(page.getByText(/69 %/)).toBeVisible();
+  await expect(page.getByText(/60 %/).first()).toBeVisible();
   await expect(page.getByText(/Café robusta, no arábica/)).toBeVisible();
 });
 

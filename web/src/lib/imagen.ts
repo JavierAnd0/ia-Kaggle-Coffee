@@ -1,5 +1,10 @@
 /** Utilidades de imagen en el navegador (solo se importan desde la isla de React). */
-export const MAX_LADO = 1024;
+/**
+ * Las fotos de entrenamiento medían 1920×1080. Al enviar a ese tamaño (en vez de 1024) el servidor ve
+ * una imagen más parecida a la del entrenamiento: con el modelo real la diferencia de probabilidades
+ * frente a Keras bajó de ~0,10 a ~0,06 (ver tests/onnx.test.ts). Sigue ahorrando datos (~200–400 KB).
+ */
+export const MAX_LADO = 1920;
 export const CALIDAD = 0.85;
 
 type Dibujable = ImageBitmap | HTMLImageElement;
@@ -22,7 +27,7 @@ async function abrirImagen(archivo: Blob): Promise<Dibujable> {
 }
 
 /**
- * Reduce la foto antes de enviarla: una foto de celular pesa 3–8 MB; reducida pesa ~150–300 KB.
+ * Reduce la foto antes de enviarla: una foto de celular pesa 3–8 MB; reducida pesa ~200–400 KB.
  * Importa mucho en el campo, donde la señal es débil y los datos son costosos.
  * `imageOrientation: 'from-image'` evita que la hoja llegue girada.
  */

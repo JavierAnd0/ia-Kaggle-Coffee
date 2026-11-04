@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { fraseConfiabilidad } from '../lib/confiabilidad';
 import { GUIA_NO_CONCLUYENTE, NOMBRE_CORTO } from '../lib/guia';
 import { detener, leer, vozDisponible } from '../lib/voz';
 import type { Clase } from '../lib/predictor/tipos';
@@ -69,6 +70,7 @@ export default function Resultado({ datos, alReiniciar }: { datos: RespuestaDiag
           </p>
         </div>
         <Sello porcentaje={v.porcentaje} nivel={v.nivel} />
+        <p className="nota" style={{ margin: 0, gridColumn: '1 / -1' }}>{fraseConfiabilidad(v.nivel)}</p>
       </div>
 
       {sano && (

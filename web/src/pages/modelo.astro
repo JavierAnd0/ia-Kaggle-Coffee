@@ -21,7 +21,7 @@ const pct = (x: number) => `${Math.round(x * 100)} %`;
 
   <section class="ficha">
     <h2>Qué tanto acierta</h2>
-    <p>Con {metricas.prueba.imagenes} fotos que el programa nunca había visto, acertó en <strong>{pct(metricas.prueba.exactitud)}</strong>. Es decir, se equivoca en cerca de 3 de cada 10 fotos.</p>
+    <p>Con {metricas.prueba.imagenes} fotos que el programa nunca había visto, acertó en <strong>{pct(metricas.prueba.exactitud)}</strong>. Es decir, se equivoca en cerca de {Math.round((1 - metricas.prueba.exactitud) * 10)} de cada 10 fotos. {metricas.corrida_anterior.nota}</p>
     <div class="scroll-x" tabindex="0" role="region" aria-label="Tabla de resultados por caso">
       <table class="tabla-datos">
         <caption class="nota" style="text-align:left;padding-bottom:0.4rem">Resultado por caso (fotos de prueba)</caption>
@@ -39,6 +39,22 @@ const pct = (x: number) => `${Math.round(x * 100)} %`;
       </table>
     </div>
     <p class="nota" style="margin-top:0.8rem">«Lo encuentra» = de cada 100 hojas con ese problema, cuántas detecta. «Acierta cuando lo dice» = de cada 100 veces que dice ese problema, cuántas son ciertas. La arañita roja es la más difícil: solo hubo 21 fotos de prueba.</p>
+  </section>
+
+  <section class="ficha">
+    <h2>Cuánto confiar en el porcentaje</h2>
+    <p>El porcentaje que ve en la pantalla sí dice algo: cuando es alto acierta más. En las fotos de prueba:</p>
+    <div class="scroll-x" tabindex="0" role="region" aria-label="Acierto según el nivel de seguridad">
+      <table class="tabla-datos">
+        <thead><tr><th>Seguridad</th><th>Fotos</th><th>Acierta</th></tr></thead>
+        <tbody>
+          <tr><td>Alta (80 % o más)</td><td>{metricas.niveles.alta.fotos_prueba}</td><td>{pct(metricas.niveles.alta.prueba)}</td></tr>
+          <tr><td>Media (60 % a 80 %)</td><td>{metricas.niveles.media.fotos_prueba}</td><td>{pct(metricas.niveles.media.prueba)}</td></tr>
+          <tr><td>Baja (menos de 60 %)</td><td>{metricas.niveles.baja.fotos_prueba}</td><td>{pct(metricas.niveles.baja.prueba)}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="nota" style="margin-top:0.8rem">Con seguridad baja el programa dice «no estoy seguro» en vez de afirmar algo. Incluso con seguridad alta se equivocó en cerca de 2 de cada 10 fotos.</p>
   </section>
 
   <section class="ficha">
