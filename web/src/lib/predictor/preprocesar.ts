@@ -88,6 +88,6 @@ export function normalizarMobileNetV2(valores: Float32Array): Float32Array {
   return salida;
 }
 
-export async function prepararEntrada(bytes: Uint8Array): Promise<Float32Array> {
-  return normalizarMobileNetV2(redimensionarBilineal(await decodificarRGB(bytes)));
+export async function prepararEntrada(bytes: Uint8Array, lado = LADO): Promise<Float32Array> {
+  return normalizarMobileNetV2(redimensionarBilineal(await decodificarRGB(bytes), lado));
 }

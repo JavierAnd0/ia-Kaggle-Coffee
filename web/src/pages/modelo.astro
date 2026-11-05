@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import AvisoOrientacion from '../components/AvisoOrientacion.astro';
 import { base, NOMBRE_CORTO } from '../lib/guia';
-import metricas from '../data/metricas.json';
+import { metricas } from '../lib/metricas';
 import type { Clase } from '../lib/predictor/tipos';
 
 export const prerender = true;
@@ -55,6 +55,12 @@ const pct = (x: number) => `${Math.round(x * 100)} %`;
       </table>
     </div>
     <p class="nota" style="margin-top:0.8rem">Con seguridad baja el programa dice «no estoy seguro» en vez de afirmar algo. Incluso con seguridad alta se equivocó en cerca de 2 de cada 10 fotos.</p>
+  </section>
+
+  <section class="ficha">
+    <h2>Revisar varias hojas ayuda</h2>
+    <p>La herramienta permite revisar 2 a 5 hojas de la misma planta y combina los resultados. En una simulación con las fotos de prueba, el acierto pasó de {pct(metricas.combinacion_simulada.prueba['1'])} con una hoja a {pct(metricas.combinacion_simulada.prueba['2'])} con dos y {pct(metricas.combinacion_simulada.prueba['3'])} con tres.</p>
+    <p class="nota">{metricas.combinacion_simulada.nota} Con más hojas también aumenta la frecuencia de «no estoy seguro», porque el programa es más exigente cuando las hojas no coinciden.</p>
   </section>
 
   <section class="ficha">

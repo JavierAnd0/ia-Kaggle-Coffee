@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import metricas from '../src/data/metricas.json';
+import { metricas } from '../src/lib/metricas';
 
 // Si hay un modelo exportado, las cifras que muestra la página «Acerca de» no deben quedar desactualizadas.
 const tarjeta = path.resolve(process.cwd(), 'model', 'model_card.json');

@@ -7,6 +7,8 @@
 export const MAX_LADO = 1920;
 export const CALIDAD = 0.85;
 
+import { evaluarCalidad, LADO_CALIDAD, type Calidad } from './calidad';
+
 type Dibujable = ImageBitmap | HTMLImageElement;
 
 /** createImageBitmap con orientación EXIF; si el navegador es antiguo y no lo soporta, usa un <img>. */
@@ -46,4 +48,24 @@ export async function reducirImagen(archivo: Blob, lado = MAX_LADO, calidad = CA
   return new Promise((resolver, rechazar) =>
     lienzo.toBlob((b) => (b ? resolver(b) : rechazar(new Error('No se pudo preparar la foto.'))), 'image/jpeg', calidad),
   );
+}
+
+/** Mide nitidez y luz sobre una versión pequeña de la foto (rápido, sin enviar nada). */
+export async function medirCalidad(foto: Blob): Promise<Calidad | null> {
+  try {
+    const mapa = await abrirImagen(foto);
+    const escala = Math.min(1, LADO_CALIDAD / Math.max(mapa.width, mapa.height));
+    const ancho = Math.max(8, Math.round(mapa.width * escala));
+    const alto = Math.max(8, Math.round(mapa.height * escala));
+    const lienzo = document.createElement('canvas');
+    lienzo.width = ancho;
+    lienzo.height = alto;
+    const ctx = lienzo.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+    ctx.drawImage(mapa, 0, 0, ancho, alto);
+    if ('close' in mapa) mapa.close();
+    return evaluarCalidad(ctx.getImageData(0, 0, ancho, alto).data, ancho, alto);
+  } catch {
+    return null; // si no se puede medir, simplemente no se avisa
+  }
 }

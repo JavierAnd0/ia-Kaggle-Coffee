@@ -111,5 +111,18 @@
       "prueba": 0.41,
       "fotos_prueba": 68
     }
+  },
+  "combinacion_simulada": {
+    "prueba": {
+      "1": 0.575,
+      "2": 0.683,
+      "3": 0.734
+    },
+    "validacion": {
+      "1": 0.708,
+      "2": 0.772,
+      "3": 0.831
+    },
+    "nota": "Simulación con las probabilidades reales del modelo: se eligen al azar 1, 2 o 3 fotos de la misma clase y se promedian. Supone que todas las hojas de la planta tienen el mismo problema; no es una medición con plantas reales."
   }
 }

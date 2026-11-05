@@ -26,6 +26,7 @@ function mulberry32(semilla: number): () => number {
 
 export class PredictorSimulado implements Predictor {
   readonly nombre = 'simulado';
+  readonly version = 'simulado-0';
   readonly origen = 'simulado' as const;
 
   async predecir(imagen: Uint8Array): Promise<ResultadoPredictor> {

@@ -5,7 +5,7 @@ import { detener, leer, vozDisponible } from '../lib/voz';
 import type { Clase } from '../lib/predictor/tipos';
 import type { RespuestaDiagnostico } from '../lib/tipos';
 import GuiaClase from './GuiaClase';
-import { Altavoz, Detener, Reiniciar, Whatsapp } from './Iconos';
+import { Altavoz, Camara, Detener, Reiniciar, Whatsapp } from './Iconos';
 
 const ORDEN: Clase[] = ['healthy', 'rust', 'red_spider_mite'];
 const NIVEL: Record<string, string> = { alta: 'Seguridad alta', media: 'Seguridad media', baja: 'Seguridad baja' };
@@ -41,7 +41,14 @@ function textoWhatsapp(r: RespuestaDiagnostico): string {
   return `Cartilla de la Hoja: en la foto de mi hoja de café ${que}. Es una orientación inicial, no un diagnóstico. Voy a consultarlo con el técnico de extensión.`;
 }
 
-export default function Resultado({ datos, alReiniciar }: { datos: RespuestaDiagnostico; alReiniciar: () => void }) {
+interface Props {
+  datos: RespuestaDiagnostico;
+  puedeAgregar: boolean;
+  alAgregar: () => void;
+  alReiniciar: () => void;
+}
+
+export default function Resultado({ datos, puedeAgregar, alAgregar, alReiniciar }: Props) {
   const { veredicto: v } = datos;
   const [hablando, setHablando] = useState(false);
   useEffect(() => () => detener(), []);
@@ -78,6 +85,18 @@ export default function Resultado({ datos, alReiniciar }: { datos: RespuestaDiag
           <strong>Ojo: esto no garantiza que la planta esté sana</strong>
           <p>El programa se equivoca a veces. Revise otras hojas, también por el envés (la cara de abajo).</p>
         </div>
+      )}
+
+      {datos.fotos && (
+        <section className="ficha" aria-labelledby="r-hojas">
+          <h3 id="r-hojas">Resultado de cada hoja</h3>
+          <ul>
+            {datos.fotos.map((f, i) => (<li key={i}>Hoja {i + 1}: {NOMBRE_CORTO[f.claseProbable]} ({f.porcentaje}%)</li>))}
+          </ul>
+          {datos.coinciden === false && (
+            <p className="error" role="alert" style={{ marginBottom: 0 }}>Las hojas no coinciden entre sí. El resultado combinado es poco seguro: consulte a un técnico.</p>
+          )}
+        </section>
       )}
 
       <section className="ficha" aria-labelledby="r-prob">
@@ -118,7 +137,13 @@ export default function Resultado({ datos, alReiniciar }: { datos: RespuestaDiag
       <aside className="aviso" role="note"><p>{datos.advertencia}</p></aside>
 
       <div className="fila-botones">
-        <button type="button" className="boton" onClick={() => { detener(); alReiniciar(); }}><Reiniciar />Revisar otra hoja</button>
+        {puedeAgregar && (
+          <button type="button" className="boton boton-claro" onClick={() => { detener(); alAgregar(); }}>
+            <Camara />Revisar otra hoja de la misma planta
+          </button>
+        )}
+        <p className="nota" style={{ margin: 0 }}>Si revisa 2 o 3 hojas de la misma planta, el programa combina los resultados.</p>
+        <button type="button" className="boton" onClick={() => { detener(); alReiniciar(); }}><Reiniciar />Revisar otra planta</button>
       </div>
     </div>
   );

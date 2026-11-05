@@ -1,9 +1,8 @@
 import type { APIRoute } from 'astro';
-import { decidir, redondearPorcentajes } from '../../lib/decision';
-import { AVISO_ROBUSTA, base, fuentesDe, obtenerGuia } from '../../lib/guia';
 import { claveCliente, limitePorMinuto, permitir } from '../../lib/limite';
 import { obtenerPredictor } from '../../lib/predictor';
 import { ImagenInvalidaError } from '../../lib/predictor/preprocesar';
+import { armarRespuesta } from '../../lib/respuesta';
 import type { ErrorApi, RespuestaDiagnostico } from '../../lib/tipos';
 
 export const prerender = false;
@@ -64,16 +63,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       : fallo('servicio_no_disponible', 'El servicio no está disponible en este momento. Intente más tarde.', 503);
   }
 
-  const veredicto = decidir(resultado.probabilidades);
-  const guia = veredicto.clase ? obtenerGuia(veredicto.clase) : null;
-  const cuerpo: RespuestaDiagnostico = {
-    modoSimulado: resultado.origen === 'simulado',
-    version: resultado.version,
-    veredicto,
-    porcentajes: redondearPorcentajes(resultado.probabilidades),
-    guia,
-    fuentes: guia ? fuentesDe(guia.fuentes) : [],
-    advertencia: `${base.advertencia_general} ${AVISO_ROBUSTA}`,
-  };
+  const cuerpo = armarRespuesta(resultado.probabilidades, resultado.origen, resultado.version);
   return json(cuerpo);
 };

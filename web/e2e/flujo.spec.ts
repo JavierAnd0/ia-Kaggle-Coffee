@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import path from 'node:path';
+import sharp from 'sharp';
 
 const FOTO = path.resolve(process.cwd(), '..', 'data', 'coffee___rust', 'C10P10E2.jpg');
 
@@ -31,7 +32,7 @@ test('flujo completo: foto → vista previa → resultado con porcentajes y guí
   await expect(page.getByRole('link', { name: /WhatsApp/ })).toHaveAttribute('href', /wa\.me/);
   await expect(page.getByText('no es un diagnóstico').or(page.getByText('no un diagnóstico')).first()).toBeVisible();
 
-  await page.getByRole('button', { name: /Revisar otra hoja/ }).click();
+  await page.getByRole('button', { name: /Revisar otra planta/ }).click();
   await expect(page.getByRole('heading', { name: /Paso 1/ })).toBeVisible();
 });
 
@@ -85,9 +86,75 @@ test('la API rechaza archivos que no son imágenes y fotos demasiado grandes', a
   expect(r.status()).toBe(413);
 });
 
+
+const FOTO2 = path.resolve(process.cwd(), '..', 'data', 'coffee___healthy', 'C10P10H1.jpg');
+
+test('varias hojas de la misma planta: se combinan y se muestra cada una', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('entrada-galeria').setInputFiles(FOTO);
+  await page.getByRole('button', { name: /Sí, revisar/ }).click();
+  await expect(page.getByRole('heading', { name: /Paso 3: resultado$/ })).toBeVisible({ timeout: 20_000 });
+  await page.getByRole('button', { name: /otra hoja de la misma planta/ }).click();
+  await expect(page.getByRole('heading', { name: /Hoja 2 de la misma planta/ })).toBeVisible();
+  await expect(page.getByText('Ya revisó 1 hoja')).toBeVisible();
+  await page.getByTestId('entrada-galeria').setInputFiles(FOTO2);
+  await page.getByRole('button', { name: /Sí, revisar/ }).click();
+  await expect(page.getByRole('heading', { name: /resultado de 2 hojas/ })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('heading', { name: 'Resultado de cada hoja' })).toBeVisible();
+  await expect(page.getByText(/Hoja 1:/)).toBeVisible();
+  await expect(page.getByText(/Hoja 2:/)).toBeVisible();
+  const valores = await page.locator('.barras .valor').allInnerTexts();
+  expect(valores.map((v) => parseInt(v, 10)).reduce((a, b) => a + b, 0)).toBe(100);
+  const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([]);
+  await page.getByRole('button', { name: /otra planta/ }).click();
+  await expect(page.getByRole('heading', { name: /Paso 1/ })).toBeVisible();
+});
+
+test('una foto borrosa o muy oscura muestra un aviso suave y deja continuar', async ({ page }) => {
+  await page.goto('/');
+  const borrosa = await sharp(FOTO).resize(1280, 720).blur(8).jpeg().toBuffer();
+  await page.getByTestId('entrada-galeria').setInputFiles({ name: 'borrosa.jpg', mimeType: 'image/jpeg', buffer: borrosa });
+  await expect(page.getByTestId('aviso-calidad')).toContainText('borrosa');
+  await expect(page.getByRole('button', { name: /Sí, revisar/ })).toBeEnabled();   // no bloquea
+
+  await page.getByRole('button', { name: /No, tomar otra/ }).click();
+  const oscura = await sharp(FOTO).resize(1280, 720).linear(0.25, 0).jpeg().toBuffer();
+  await page.getByTestId('entrada-galeria').setInputFiles({ name: 'oscura.jpg', mimeType: 'image/jpeg', buffer: oscura });
+  await expect(page.getByTestId('aviso-calidad')).toContainText('oscura');
+});
+
+test('una foto buena no muestra aviso de calidad', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('entrada-galeria').setInputFiles(FOTO);
+  await expect(page.getByRole('heading', { name: /Paso 2/ })).toBeVisible();
+  await expect(page.getByTestId('aviso-calidad')).toHaveCount(0);
+});
+
+test('/api/combinar valida lo que recibe', async ({ request }) => {
+  const ok = await request.post('/api/combinar', { data: { fotos: [{ healthy: 0.1, rust: 0.8, red_spider_mite: 0.1 }, { healthy: 0.2, rust: 0.7, red_spider_mite: 0.1 }] } });
+  expect(ok.status()).toBe(200);
+  const cuerpo = await ok.json();
+  expect(cuerpo.coinciden).toBe(true);
+  expect(cuerpo.fotos).toHaveLength(2);
+  expect(cuerpo.veredicto.clase).toBe('rust');
+  const una = await request.post('/api/combinar', { data: { fotos: [{ healthy: 0.1, rust: 0.8, red_spider_mite: 0.1 }] } });
+  expect(una.status()).toBe(400);
+  const mala = await request.post('/api/combinar', { data: { fotos: [{ healthy: 1, rust: 1, red_spider_mite: 1 }, { healthy: 1, rust: 0, red_spider_mite: 0 }] } });
+  expect(mala.status()).toBe(400);
+  const seis = await request.post('/api/combinar', { data: { fotos: Array(6).fill({ healthy: 0.2, rust: 0.7, red_spider_mite: 0.1 }) } });
+  expect(seis.status()).toBe(400);
+  const texto = await request.post('/api/combinar', { data: 'esto no es json', headers: { 'Content-Type': 'application/json' } });
+  expect(texto.status()).toBe(400);
+  // Astro bloquea POST con tipos de formulario (text/plain) desde otro origen: protección contra CSRF
+  const form = await request.post('/api/combinar', { data: 'x', headers: { 'Content-Type': 'text/plain' } });
+  expect(form.status()).toBe(403);
+});
+
+// Debe ir al final: agota el límite de uso del servidor de pruebas.
 test('la API limita las consultas repetidas', async ({ request }) => {
   const estados: number[] = [];
-  for (let i = 0; i < 40; i += 1) {
+  for (let i = 0; i < 70; i += 1) {
     estados.push((await request.post('/api/diagnostico', { data: Buffer.from('x'), headers: { 'Content-Type': 'image/jpeg' } })).status());
   }
   expect(estados).toContain(429);

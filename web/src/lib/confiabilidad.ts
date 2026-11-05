@@ -1,5 +1,5 @@
 /** Qué tanto acertó el programa en las fotos de prueba según su nivel de seguridad (datos reales de metricas.json). */
-import metricas from '../data/metricas.json';
+import { metricas } from './metricas';
 import type { Nivel } from './decision';
 
 export function fraseConfiabilidad(nivel: Nivel): string {
