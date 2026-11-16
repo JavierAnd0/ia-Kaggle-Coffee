@@ -1,0 +1,8 @@
+{
+  "exportar": "individual",
+  "mejor_semilla": 3,
+  "regla": "conjunto solo si F1 macro val(conjunto) - F1 macro val(mejor individual) >= 0.01",
+  "tta": "no se usa en la web (solo se informa en validación)",
+  "val_f1_macro_mejor": 0.8369219797461133,
+  "val_f1_macro_conjunto": 0.8100908531501202
+}

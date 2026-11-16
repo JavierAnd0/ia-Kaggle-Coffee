@@ -40,8 +40,9 @@ def ensamblar(modelos: list, size: int) -> tf.keras.Model:
     entrada = tf.keras.Input((size, size, 3))
     salidas = []
     for i, m in enumerate(modelos):
-        m.name = f"miembro_{i}"
-        salidas.append(m(entrada))
+        # Keras 3 no permite reasignar `m.name`: se envuelve en un modelo nuevo con nombre único.
+        miembro = tf.keras.Model(m.inputs, m.outputs, name=f"miembro_{i}")
+        salidas.append(miembro(entrada))
     return tf.keras.Model(entrada, tf.keras.layers.Average()(salidas), name="ensamble")
 
 

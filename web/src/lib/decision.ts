@@ -1,7 +1,7 @@
 /**
  * NÚCLEO PURO (sin E/S): convierte probabilidades del modelo en un veredicto prudente.
  *
- * Decisión de diseño: el modelo es modesto (exactitud 0,69 en prueba) y solo conoce 3 clases.
+ * Decisión de diseño: el modelo es modesto (versión 5: exactitud 0,84 y F1 macro 0,76 en prueba; ver model/model_card.json) y solo conoce 3 clases.
  * Por eso NO se afirma una enfermedad salvo que la probabilidad sea alta y la diferencia con la
  * segunda opción sea clara (con 3 clases, p ≥ 0,6 ya garantiza esa ventaja). En los demás casos se responde "no concluyente" y se pide otra foto.
  * Los umbrales NO están calibrados con datos reales: son un punto de partida conservador que

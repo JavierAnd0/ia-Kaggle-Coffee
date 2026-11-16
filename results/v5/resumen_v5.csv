@@ -1,0 +1,18 @@
+,valor
+backbone,efficientnetv2b0
+tamano,224
+semillas,"[0, 1, 2, 3, 4]"
+val_f1_macro_media,0.8073515483080416
+val_f1_macro_desv,0.02810990896140452
+val_exactitud_media,0.8823529411764707
+mejor_semilla,3
+val_f1_macro_mejor,0.8369219797461133
+val_f1_macro_conjunto,0.8100908531501202
+val_exactitud_conjunto,0.8823529411764706
+val_f1_macro_mejor_tta_flip,0.8361093399773175
+val_f1_macro_conjunto_tta_flip,0.8073501778628782
+exportar,individual
+test_f1_macro_individual,0.7637375938029534
+test_exactitud_individual,0.8444444444444444
+test_f1_macro_conjunto,0.7568168823743436
+test_exactitud_conjunto,0.8444444444444444
