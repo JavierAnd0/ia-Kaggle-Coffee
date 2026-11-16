@@ -57,6 +57,7 @@ test('las guías se leen sin enviar fotos y citan fuentes', async ({ page }) => 
     await page.goto(`/guias/${clase}`);
     await expect(page.getByRole('heading', { name: 'Qué hacer hoy' })).toBeVisible();
     await expect(page.getByText('De dónde sale esta información')).toBeVisible();
+    await expect(page.getByTestId('aviso-pendiente')).toContainText('pendiente de revisión por un agrónomo');
   }
 });
 
