@@ -45,6 +45,14 @@ def ensamblar(modelos: list, size: int) -> tf.keras.Model:
     return tf.keras.Model(entrada, tf.keras.layers.Average()(salidas), name="ensamble")
 
 
+class TiempoAgotado(Exception):
+    """El límite de tiempo no alcanza para otra corrida: se detiene limpiamente con todo lo hecho guardado."""
+
+    def __init__(self, hechas: int, total: int):
+        super().__init__(f"Se detuvo por el límite de tiempo con {hechas} de {total} corridas completas.")
+        self.hechas, self.total = hechas, total
+
+
 def carpeta_checkpoints(dir_modelos=None) -> Path:
     """Dónde se guardan modelos y resultados parciales. En Colab conviene que sea una carpeta de Google Drive
     (variable de entorno CHECKPOINT_DIR o argumento) para que una desconexión no pierda lo ya entrenado."""
@@ -52,14 +60,18 @@ def carpeta_checkpoints(dir_modelos=None) -> Path:
 
 
 def correr_rejilla(hp, train_df, val_df, li, tamanos=(224, 320, 448), semillas=(0, 1, 2), epocas=30,
-                   epocas_ft=10, n_extra=150, dir_modelos=None, verbose=0):
+                   epocas_ft=10, n_extra=150, dir_modelos=None, verbose=0, limite_segundos=None):
     """Receta 4b (sobremuestreo real + pesos de clase + ajuste fino) para cada tamaño y semilla.
 
     REANUDABLE: cada corrida terminada deja en `dir_modelos` su modelo (.keras), sus probabilidades de
     validación (.npy) y su fila de resultados (.json). Si se vuelve a ejecutar tras una desconexión o un
     error, las corridas completas se saltan y solo se entrenan las que faltan.
+    `limite_segundos`: si se indica (p. ej. el límite de sesión de Kaggle menos un margen), antes de empezar
+    una corrida nueva se comprueba que quepa (según lo que tardó la más lenta hasta ahora); si no, lanza
+    `TiempoAgotado` con todo lo hecho ya guardado, para volver a ejecutar y continuar.
     Devuelve (tabla por corrida, tabla resumen por tamaño).
     """
+    inicio, mas_lenta = time.time(), 0.0
     dir_modelos = carpeta_checkpoints(dir_modelos)
     dir_modelos.mkdir(parents=True, exist_ok=True)
     minoritaria = train_df["label"].value_counts().idxmin()
@@ -76,6 +88,8 @@ def correr_rejilla(hp, train_df, val_df, li, tamanos=(224, 320, 448), semillas=(
                 p, fila = np.load(ruta_p), json.loads(ruta_f.read_text())
                 print(f"[{hechas}/{total}] tamaño {tam} semilla {semilla}: ya estaba hecha (F1 macro {fila['f1_macro']:.3f}), se reutiliza")
             else:
+                if limite_segundos and time.time() - inicio + mas_lenta * 1.15 > limite_segundos:
+                    raise TiempoAgotado(len(list(dir_modelos.glob('fila_*.json'))), total)
                 extra = train_df[train_df["label"] == minoritaria].sample(n_extra, replace=True, random_state=semilla)
                 tr = pd.concat([train_df, extra], ignore_index=True)
                 t0 = time.time()
@@ -85,6 +99,7 @@ def correr_rejilla(hp, train_df, val_df, li, tamanos=(224, 320, 448), semillas=(
                 m.save(ruta_m)
                 np.save(ruta_p, p)
                 fila = {"tamano": tam, "semilla": semilla, "segundos": round(time.time() - t0), **metricas(p, val_df, li)}
+                mas_lenta = max(mas_lenta, fila["segundos"])
                 ruta_f.write_text(json.dumps(fila))                          # al final: su existencia marca "completa"
                 print(f"[{hechas}/{total}] tamaño {tam} semilla {semilla}: F1 macro {fila['f1_macro']:.3f}  "
                       f"exactitud {fila['accuracy']:.3f}  ({fila['segundos'] // 60} min)")

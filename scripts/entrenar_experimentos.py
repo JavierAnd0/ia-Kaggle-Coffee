@@ -29,6 +29,8 @@ def leer_argumentos(argv=None):
     p.add_argument("--checkpoints", default=None, help="carpeta de modelos parciales (por defecto ./checkpoints o $CHECKPOINT_DIR)")
     p.add_argument("--salida", default=str(RAIZ / "web" / "model"), help="carpeta de exportación")
     p.add_argument("--tamano-final", type=int, default=None, help="forzar el tamaño del conjunto final")
+    p.add_argument("--limite-horas", type=float, default=None,
+                   help="se detiene solo (con todo guardado) si no cabe otra corrida en este tiempo; útil en Kaggle (usar ~10)")
     p.add_argument("--solo-rejilla", action="store_true", help="comparar tamaños sin exportar")
     p.add_argument("--prueba", action="store_true",
                    help="prueba rápida con pocas fotos, sin pesos de ImageNet y en una carpeta temporal (no toca el repo)")
@@ -67,9 +69,14 @@ def main(argv=None) -> int:
 
     li = generators.make_label_index(tr["label"])
     hp = tuning.load_best_hp()
-    corridas, resumen = experiments.correr_rejilla(hp, tr, va, li, tamanos=tuple(a.tamanos), semillas=tuple(a.semillas),
-                                                   epocas=a.epocas, epocas_ft=a.epocas_ft, dir_modelos=a.checkpoints,
-                                                   n_extra=4 if a.prueba else 150)
+    try:
+        corridas, resumen = experiments.correr_rejilla(hp, tr, va, li, tamanos=tuple(a.tamanos), semillas=tuple(a.semillas),
+                                                       epocas=a.epocas, epocas_ft=a.epocas_ft, dir_modelos=a.checkpoints,
+                                                       n_extra=4 if a.prueba else 150,
+                                                       limite_segundos=a.limite_horas * 3600 if a.limite_horas else None)
+    except experiments.TiempoAgotado as e:
+        print(f"\n{e}\nTodo lo entrenado quedó guardado en {experiments.carpeta_checkpoints(a.checkpoints)}. Vuelva a ejecutar el mismo comando para continuar.")
+        return 3
     config.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     corridas.to_csv(config.RESULTS_DIR / "experimentos_corridas.csv", index=False)
     resumen.to_csv(config.RESULTS_DIR / "experimentos_resumen.csv")

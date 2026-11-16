@@ -32,7 +32,8 @@ python scripts/entrenar_experimentos.py --prueba        # 2-3 min: comprueba que
 python scripts/entrenar_experimentos.py                 # experimentos completos (reanudable: si se corta, repita el comando)
 ```
 - **Sin GPU el entrenamiento completo puede tardar muchas horas o días.** Para eso conviene Colab (GPU T4/L4) o Kaggle Notebooks.
-- Los notebooks (`notebooks/*.ipynb`) funcionan en Colab, PyCharm y Jupyter: encuentran solos la carpeta del proyecto. En Colab, con `USAR_DRIVE = True`, los modelos parciales se guardan en Google Drive y sobreviven a una desconexión.
+- **Kaggle** (GPU gratis, sigue corriendo con el navegador cerrado): ver `docs/KAGGLE.md`.
+- Los notebooks (`notebooks/*.ipynb`) funcionan en Kaggle, Colab, PyCharm y Jupyter: encuentran solos la carpeta del proyecto. En Colab, con `USAR_DRIVE = True`, los modelos parciales se guardan en Google Drive y sobreviven a una desconexión.
 - Los modelos parciales se guardan en `checkpoints/` (o en `$CHECKPOINT_DIR`) y no se suben a Git.
 
 ## Estado
