@@ -11,7 +11,7 @@ Proyecto medio: clasificación de enfermedades en hojas de café con el dataset 
 
 ## Resultados guardados (`results/`)
 - `best_hp.json` y `cv_results.csv`: resultados de Hyperband y de la validación cruzada, ejecutados en Colab (archivos originales descargados de Colab).
-- `ablation_val.csv` y `test_report.txt`: comparación de variantes en validación y reporte final en test (variante elegida: sobremuestreo con imágenes reales; exactitud 0,69, F1 macro 0,60).
+- `ablation_val.csv` y `test_report.txt`: comparación de variantes en validación y reporte final en test (variante 4b: exactitud 0,69, F1 macro 0,60). Modelo final v5 en `results/v5/` (EfficientNetV2-B0, exactitud 0,84 y F1 macro 0,76 en prueba).
 - `docs/informe_proyecto_medio.docx`: informe académico con todos los resultados.
 
 ## Web «Cartilla de la Hoja»
