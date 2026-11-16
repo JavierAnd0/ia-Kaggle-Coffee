@@ -25,8 +25,17 @@ npm run build && npm start
 | | `modelo` | **Exige** el modelo. Si falta, `/api/diagnostico` responde 503. Recomendado en producción. |
 | | `simulado` | Fuerza el modo de prueba. |
 | `MODEL_DIR` | ruta | Carpeta del modelo (por defecto `./model`). |
-| `TRUST_PROXY` | `1` | Detrás de un proxy inverso/HTTPS: toma la IP de `X-Forwarded-For` para el límite de uso (si no, todos comparten la IP del proxy). Actívelo **solo** si el proxy es de confianza. |
-| `LIMITE_POR_MINUTO` | número (12) | Consultas por minuto por IP. |
+| `TRUST_PROXY` | `1` | Detrás de un proxy inverso/HTTPS: toma la IP del cliente del **último** valor de `X-Forwarded-For` (el que agrega el proxy de Railway, Render, Fly…; los primeros los puede inventar el cliente). Sin esto, todos comparten la IP del proxy. Actívelo **solo** si hay un proxy de confianza delante. |
+| `CABECERA_IP` | nombre de cabecera | Opcional, con `TRUST_PROXY=1`: usa esa cabecera en vez de `X-Forwarded-For` (p. ej. `x-real-ip`, `fly-client-ip`, `cf-connecting-ip`). Úsela solo si su proxy la **reescribe** siempre. |
+| `LIMITE_POR_MINUTO` | número (20) | Fotos por minuto por IP en `/api/diagnostico`. `/api/combinar` (no corre el modelo) tiene un cupo aparte del triple. |
+
+### Límite de uso
+
+Cada foto revisada cuenta una vez contra `LIMITE_POR_MINUTO`. Revisar varias hojas de una planta
+llama además a `/api/combinar`, pero ese paso solo promedia números y tiene su propio cupo, así que
+**no** gasta las consultas de foto. El valor por defecto (20) es holgado a propósito: en Colombia los
+operadores móviles comparten una misma IP entre muchos celulares (CGNAT), y una vereda entera puede
+salir a internet por la misma dirección. Si ve respuestas 429 legítimas, súbalo.
 | `HOST`, `PORT` | | Los usa el servidor de Astro (`node dist/server/entry.mjs`). |
 
 ## Conectar el modelo real
