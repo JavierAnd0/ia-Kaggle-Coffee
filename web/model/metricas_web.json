@@ -1,0 +1,85 @@
+{
+  "prueba": {
+    "imagenes": 225,
+    "exactitud": 0.84,
+    "f1_macro": 0.76,
+    "por_clase": {
+      "healthy": {
+        "precision": 0.89,
+        "recall": 0.99,
+        "f1": 0.94,
+        "soporte": 115
+      },
+      "red_spider_mite": {
+        "precision": 0.5,
+        "recall": 0.62,
+        "f1": 0.56,
+        "soporte": 24
+      },
+      "rust": {
+        "precision": 0.91,
+        "recall": 0.71,
+        "f1": 0.8,
+        "soporte": 86
+      }
+    },
+    "matriz": {
+      "healthy": [
+        114,
+        1,
+        0
+      ],
+      "red_spider_mite": [
+        3,
+        15,
+        6
+      ],
+      "rust": [
+        11,
+        14,
+        61
+      ]
+    },
+    "orden_matriz": [
+      "healthy",
+      "red_spider_mite",
+      "rust"
+    ]
+  },
+  "validacion_modelo": {
+    "imagenes": 221,
+    "exactitud": 0.9,
+    "f1_macro": 0.84
+  },
+  "niveles": {
+    "alta": {
+      "validacion": 0.95,
+      "prueba": 0.91,
+      "fotos_prueba": 155
+    },
+    "media": {
+      "validacion": 0.82,
+      "prueba": 0.82,
+      "fotos_prueba": 44
+    },
+    "baja": {
+      "validacion": 0.76,
+      "prueba": 0.5,
+      "fotos_prueba": 26
+    }
+  },
+  "combinacion_simulada": {
+    "prueba": {
+      "1": 0.782,
+      "2": 0.84,
+      "3": 0.875
+    },
+    "validacion": {
+      "1": 0.843,
+      "2": 0.882,
+      "3": 0.917
+    },
+    "nota": "Simulación con las probabilidades reales del modelo: se eligen al azar 1, 2 o 3 fotos de la misma clase y se promedian. Supone que todas las hojas de la planta tienen el mismo problema; no es una medición con plantas reales."
+  },
+  "nota": "Cifras del modelo exportado (versión 5-2026-11-16-efficientnetv2b0), calculadas con sus probabilidades reales."
+}

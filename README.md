@@ -17,6 +17,15 @@ Proyecto medio: clasificación de enfermedades en hojas de café con el dataset 
 ## Web «Cartilla de la Hoja»
 En `web/` hay una aplicación (Astro + React + Node.js) que recibe la foto de una hoja y devuelve a qué se parece, con qué seguridad y una guía de pasos para el productor. Es una orientación inicial, no un diagnóstico, y el modelo se entrenó con café **robusta**. Ver `web/README.md` y `docs/DISENO_WEB.md`. Modelo actual en `web/model/`; para mejorarlo: `notebooks/experimentos_mejora.ipynb` (resolución × semillas × conjunto de modelos) y `notebooks/exportar_modelo.ipynb` (reexportar la receta actual).
 
+## Modelo v5 (recomendado para la web)
+Un solo comando entrena y evalúa de forma honesta el modelo para la web: `scripts/entrenar_v5.py` (o, en Colab Pro con GPU A100/L4, *Ejecutar todas* en [`notebooks/entrenar_colab_v5.ipynb`](https://colab.research.google.com/github/JavierAnd0/ia-Kaggle-Coffee/blob/claude/modelo-v5/notebooks/entrenar_colab_v5.ipynb)).
+- **Datos:** `data_splits/v5/` quita las 24 fotos de los 12 grupos de duplicados exactos con etiquetas contradictorias y las 55 copias exactas restantes; partición 70/15/15 **estratificada** (StratifiedGroupKFold) y agrupada por planta + duplicados, semilla 42. Los CSV antiguos (`data_splits/*.csv`) quedan para reproducir el informe.
+- **Receta:** EfficientNetV2-B0 (opcional ConvNeXt-Tiny) con el reescalado dentro del modelo (la entrada sigue en [-1, 1], como espera la web); cabeza 8 épocas y luego todo el backbone con AdamW + coseno; pesos de clase + label smoothing 0,1 (sin sobremuestreo); selección por F1 macro de validación; semillas 0 a 4; determinismo de TF (`--no-determinismo` para desactivarlo).
+- **Protocolo:** la decisión entre el mejor modelo individual y el conjunto de las 5 semillas se toma en validación (conjunto solo si gana por ≥ 0,01) y el test se evalúa una sola vez. Resultados en `results/v5/`.
+- Prueba rápida: `python scripts/entrenar_v5.py --rapido` (no toca `web/model`).
+
+**Versión de Python:** 3.11 o 3.12 (probado con 3.12.13 y TensorFlow 2.19.1 / Keras 3.15.1; ver `requirements.txt`). En Colab se usa el TensorFlow que ya trae.
+
 ## Uso
 ```bash
 pip install -r requirements.txt

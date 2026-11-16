@@ -74,7 +74,7 @@ Lo recopiló un agente de IA con búsqueda web (Cenicafé, FNC, UPR, SENASICA, U
 
 ## 6b. Plan para mejorar el modelo
 
-1. `notebooks/experimentos_mejora.ipynb` (Colab, 1,5–3 h): receta 4b con entradas de 224/320/448 px × 3 semillas, comparadas **solo en validación** (media ± desviación y conjunto de modelos). Elige el mejor tamaño, evalúa el conjunto una vez en test y exporta ONNX + `metricas_web.json` a `web/model/` (la web lee el tamaño de entrada de `model_card.json` y muestra las cifras de `metricas_web.json`). **No está garantizado que mejore**; si no supera a la versión actual (validación: exactitud 0,73, F1 macro 0,68), no se reemplaza.
+1. `notebooks/experimentos_mejora.ipynb` (Colab, 1,5–3 h): receta 4b con entradas de 224/320/448 px × 3 semillas, comparadas **solo en validación** (media ± desviación y conjunto de modelos). Elige el mejor tamaño, evalúa el conjunto una vez en test y exporta ONNX + `metricas_web.json` a `web/model/` (la web lee el tamaño de entrada de `model_card.json` y muestra las cifras de `metricas_web.json`). **Resultado (ver `docs/anexo_experimentos.md`):** 224 px fue el mejor (F1 0,662 ± 0,027 frente a 0,632 a 320 px y 0,610 a 448 px) y el conjunto de 3 semillas casi no aportó (0,668); no superó al modelo actual (validación F1 0,679), así que **se conserva el modelo actual**. Aumentar la resolución no ayudó.
 2. Datos de arábica (BRACOL: Brasil, celulares, con severidad; JMuBEN: Kenia, 5 clases): ninguno trae arañita roja. Requiere descargarlos, revisar licencia y estructura, y decidir qué clases entrenar.
 3. Fotos reales colombianas con etiqueta de un técnico (con consentimiento) para validar y reentrenar.
 

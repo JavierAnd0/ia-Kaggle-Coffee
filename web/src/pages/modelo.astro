@@ -38,7 +38,7 @@ const pct = (x: number) => `${Math.round(x * 100)} %`;
         </tbody>
       </table>
     </div>
-    <p class="nota" style="margin-top:0.8rem">«Lo encuentra» = de cada 100 hojas con ese problema, cuántas detecta. «Acierta cuando lo dice» = de cada 100 veces que dice ese problema, cuántas son ciertas. La arañita roja es la más difícil: solo hubo 21 fotos de prueba.</p>
+    <p class="nota" style="margin-top:0.8rem">«Lo encuentra» = de cada 100 hojas con ese problema, cuántas detecta. «Acierta cuando lo dice» = de cada 100 veces que dice ese problema, cuántas son ciertas. La arañita roja es la más difícil: solo hubo {metricas.prueba.por_clase.red_spider_mite.soporte} fotos de prueba.</p>
   </section>
 
   <section class="ficha">
@@ -54,7 +54,7 @@ const pct = (x: number) => `${Math.round(x * 100)} %`;
         </tbody>
       </table>
     </div>
-    <p class="nota" style="margin-top:0.8rem">Con seguridad baja el programa dice «no estoy seguro» en vez de afirmar algo. Incluso con seguridad alta se equivocó en cerca de 2 de cada 10 fotos.</p>
+    <p class="nota" style="margin-top:0.8rem">Con seguridad baja el programa dice «no estoy seguro» en vez de afirmar algo. Incluso con seguridad alta se equivocó en cerca de {Math.max(1, Math.round((1 - metricas.niveles.alta.prueba) * 10))} de cada 10 fotos.</p>
   </section>
 
   <section class="ficha">
