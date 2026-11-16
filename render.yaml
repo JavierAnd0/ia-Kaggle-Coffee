@@ -1,0 +1,20 @@
+# Despliegue en Render (plan gratuito) a partir de web/Dockerfile.
+# En Render: New → Blueprint → este repositorio. El plan gratuito se duerme tras ~15 min sin uso;
+# la primera visita después tarda unos 30-60 s en despertar.
+services:
+  - type: web
+    name: cartilla-de-la-hoja
+    runtime: docker
+    plan: free
+    rootDir: web
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/salud
+    autoDeploy: true
+    envVars:
+      - key: PREDICTOR
+        value: modelo
+      - key: LIMITE_POR_MINUTO
+        value: "60"
+      - key: INFERENCIAS_SIMULTANEAS
+        value: "1"
