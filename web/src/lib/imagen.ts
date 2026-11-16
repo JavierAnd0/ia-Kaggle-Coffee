@@ -1,11 +1,12 @@
 /** Utilidades de imagen en el navegador (solo se importan desde la isla de React). */
 /**
- * Las fotos de entrenamiento medían 1920×1080. Al enviar a ese tamaño (en vez de 1024) el servidor ve
- * una imagen más parecida a la del entrenamiento: con el modelo real la diferencia de probabilidades
- * frente a Keras bajó de ~0,10 a ~0,06 (ver tests/onnx.test.ts). Sigue ahorrando datos (~200–400 KB).
+ * Tamaño de envío. Las fotos de entrenamiento medían 1920×1080, pero el servidor las reduce a 224 px
+ * de todas formas. Medido con el modelo real frente a Keras (tests/onnx.test.ts): 1024 px desviaba
+ * hasta ~0,10; 1920 px a 0,85 hasta 0,060; 1280 px a 0,8 hasta 0,075, siempre con la misma clase.
+ * Se eligió 1280/0,8 porque pesa menos de la mitad (~100–200 KB) y en el campo los datos son caros.
  */
-export const MAX_LADO = 1920;
-export const CALIDAD = 0.85;
+export const MAX_LADO = 1280;
+export const CALIDAD = 0.8;
 
 import { evaluarCalidad, LADO_CALIDAD, type Calidad } from './calidad';
 
