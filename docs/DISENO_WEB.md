@@ -69,7 +69,7 @@ Lo recopiló un agente de IA con búsqueda web (Cenicafé, FNC, UPR, SENASICA, U
 2. **Revisión agronómica** de `web/src/data/conocimiento.json` y de la sección «En Colombia» (variedades, umbrales, contactos reales con teléfonos).
 3. **Validar con fotos de cultivos colombianos (arábica)**: medir exactitud y calibrar los umbrales de `decision.ts` con las probabilidades reales de validación (hoy son un punto de partida conservador, no calibrado).
 4. **Prueba con productores reales** (lectura, botones, voz) y ajuste de lenguaje; posiblemente ampliar a otros países (hoy los contactos son de Colombia, Perú, México y Centroamérica solo como sitios oficiales).
-5. **Desplegar** (Dockerfile incluido, no probado aquí) con `PREDICTOR=modelo`, HTTPS y, si hay mucho tráfico, un límite de uso compartido (el actual vive en memoria del proceso).
+5. **Desplegar** (Dockerfile incluido y probado: usuario sin privilegios, verificación de salud en `/api/salud`) con `PREDICTOR=modelo`, `TRUST_PROXY=1`, HTTPS y, si hay mucho tráfico, un límite de uso compartido (el actual vive en memoria del proceso).
 6. Mejoras posibles: funcionar sin conexión (service worker), más enfermedades (ojo de gallo, mancha de hierro), recomendar tomar foto del envés. Ya implementado: varias hojas por planta y aviso de calidad de la foto; falta validar ambos con fotos reales de productores (umbrales de calidad y beneficio de combinar).
 
 ## 6b. Plan para mejorar el modelo
