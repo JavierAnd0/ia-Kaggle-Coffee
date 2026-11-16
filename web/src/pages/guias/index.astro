@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import AvisoOrientacion from '../../components/AvisoOrientacion.astro';
+import AvisoPendiente from '../../components/AvisoPendiente.astro';
 import { base, NOMBRE_CORTO } from '../../lib/guia';
 import type { Clase } from '../../lib/predictor/tipos';
 
@@ -11,6 +12,7 @@ const claves: Clase[] = ['rust', 'red_spider_mite', 'healthy'];
   <h1>Guías</h1>
   <p class="lead">Lea con calma qué es cada problema, cómo se reconoce y qué hacer. Funcionan sin enviar ninguna foto.</p>
   <AvisoOrientacion />
+  <AvisoPendiente />
   <div class="guia-enlaces">
     {claves.map((c) => (
       <a class="ficha" href={`/guias/${c}`} style="text-decoration:none;color:inherit">

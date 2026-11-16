@@ -59,7 +59,7 @@
         "Averigüe qué variedad tiene sembrada; algunas son resistentes.",
         "Llame al técnico de extensión para confirmar y planear el manejo.",
         "Mantenga bien nutridas y vigorosas las plantas, como recomienda Cenicafé.",
-        "Si va a aplicar un producto, use solo uno con registro y siga la etiqueta."
+        "Antes de aplicar cualquier producto, consulte a un técnico o agrónomo. Use solo productos con registro y siga la etiqueta."
       ],
       "prevencion": [
         "Siembre variedades resistentes con semilla certificada.",
@@ -79,12 +79,12 @@
           {
             "tipo": "Fungicidas de contacto a base de cobre",
             "para_que": "Proteger la hoja contra el hongo de la roya.",
-            "advertencia": "Use solo productos con registro ICA vigente para café y siga la etiqueta."
+            "advertencia": "Consulte a un técnico o agrónomo antes de aplicar cualquier producto. Use solo productos con registro ICA vigente para café y siga la etiqueta."
           },
           {
-            "tipo": "Fungicidas sistémicos (triazoles y estrobilurinas)",
-            "para_que": "Proteger o curar la hoja desde adentro de la planta.",
-            "advertencia": "Los productos autorizados cambian con el tiempo; pregunte al técnico cuáles están vigentes y cómo alternarlos."
+            "tipo": "Fungicidas sistémicos",
+            "para_que": "Proteger la hoja contra la roya. Cuál usar, cuándo y cómo alternarlo lo debe indicar un técnico.",
+            "advertencia": "Consulte a un técnico o agrónomo antes de aplicar cualquier producto: los productos autorizados cambian con el tiempo y él sabe cuáles están vigentes."
           }
         ],
         "nota_registro": "Use solo productos con registro vigente ante la autoridad (en Colombia, el ICA) para café. Lea y siga la etiqueta y use el equipo de protección."
@@ -133,7 +133,7 @@
           {
             "tipo": "Acaricidas (productos contra ácaros)",
             "para_que": "Bajar la población de ácaros cuando el técnico lo recomiende.",
-            "advertencia": "Ejemplos usados en otro país (Costa Rica): propargita y azufre. No los use sin que un técnico confirme que están registrados para café en su país."
+            "advertencia": "Consulte a un técnico o agrónomo antes de aplicar cualquier producto. Él le dirá si de verdad hace falta y cuál está registrado para café en su país."
           }
         ],
         "nota_registro": "Use solo productos con registro vigente ante la autoridad (en Colombia, el ICA) para café. Lea y siga la etiqueta y use el equipo de protección."
@@ -246,9 +246,9 @@
   ],
   "por_verificar": [
     "No se pudo abrir el texto completo de los PDF de Cenicafé (el servidor bloqueó los dominios cenicafe.org); los datos provienen de resúmenes de resultados de búsqueda. Revisar contra los originales.",
-    "Fungicidas para roya (cobre, triazoles, estrobilurinas, algunos ya no disponibles): proviene de un avance técnico de Cenicafé de 2025 visto en resultados de búsqueda; no se identificó la URL exacta. Verificar con Cenicafé.",
+    "Fungicidas para roya: la guía solo menciona tipos generales (cobre, sistémicos) y remite al técnico. La información proviene de un avance técnico de Cenicafé de 2025 visto en resultados de búsqueda; no se identificó la URL exacta. Verificar con Cenicafé.",
     "Umbrales de decisión y calendario de aplicación de fungicidas (p. ej. 60 días después de floración principal) no se incluyeron por no poder verificarse en el texto original.",
-    "Acaricidas para arañita roja: propargita y azufre vienen de un estudio de Costa Rica, no de Colombia. Verificar productos registrados por el ICA para café.",
+    "Acaricidas para arañita roja: la guía no nombra productos ni ingredientes activos y remite al técnico. Verificar con el ICA qué productos tienen registro para café.",
     "Afirmación de que se debe evitar insecticidas por efectos en enemigos naturales: Cenicafé menciona hormoligosis y depredadores; la recomendación exacta no pudo leerse.",
     "Descripción detallada de síntomas de arañita roja (puntos y huevos con lupa) combina fuentes y requiere confirmación con el avance técnico 436.",
     "Contactos: solo se dan los sitios oficiales por dominio; no se abrieron ni se verificaron teléfonos ni páginas de contacto. No se encontró línea nacional de atención de la FNC.",

@@ -65,8 +65,9 @@ export default function Resultado({ datos, puedeAgregar, alAgregar, alReiniciar 
   };
 
   return (
-    <div className="resultado" aria-live="polite">
-      <div className={`veredicto ${clase}`}>
+    <div className="resultado">
+      {/* Solo el veredicto se anuncia: el resto de la ficha se lee al recorrer la página. */}
+      <div className={`veredicto ${clase}`} aria-live="polite">
         <div>
           <div className="etiqueta">Resultado de la foto</div>
           <h2>{titulo}</h2>

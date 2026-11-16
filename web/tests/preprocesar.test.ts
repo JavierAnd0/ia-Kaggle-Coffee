@@ -35,6 +35,18 @@ describe('preprocesar', () => {
   });
 });
 
+describe('fotos enormes', () => {
+  it('se reducen a ≤ 2000 px al decodificar; las de ≤ 2000 px quedan intactas', async () => {
+    const { MAX_LADO_DECODIFICADO } = await import('../src/lib/predictor/preprocesar');
+    const grande = await sharp({ create: { width: 4000, height: 3000, channels: 3, background: { r: 10, g: 120, b: 10 } } }).jpeg().toBuffer();
+    const g = await decodificarRGB(grande);
+    expect([g.ancho, g.alto]).toEqual([MAX_LADO_DECODIFICADO, 1500]);
+    const normal = await sharp({ create: { width: 1920, height: 1080, channels: 3, background: { r: 10, g: 120, b: 10 } } }).jpeg().toBuffer();
+    const n = await decodificarRGB(normal);
+    expect([n.ancho, n.alto]).toEqual([1920, 1080]);
+  });
+});
+
 describe('errores de imagen', () => {
   it('una foto truncada lanza ImagenInvalidaError (error del usuario, no del servicio)', async () => {
     const { ImagenInvalidaError } = await import('../src/lib/predictor/preprocesar');

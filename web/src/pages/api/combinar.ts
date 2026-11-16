@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { MAX_FOTOS, promediar } from '../../lib/combinar';
-import { claveCliente, limitePorMinuto, permitir } from '../../lib/limite';
+import { leerCuerpoLimitado } from '../../lib/cuerpo';
+import { claveCliente, limiteCombinarPorMinuto, permitir } from '../../lib/limite';
 import { obtenerPredictor } from '../../lib/predictor';
 import { CLASES, type Probabilidades } from '../../lib/predictor/tipos';
 import { armarRespuesta } from '../../lib/respuesta';
@@ -8,7 +9,7 @@ import type { ErrorApi } from '../../lib/tipos';
 
 export const prerender = false;
 
-const MAX_BYTES = 4096;
+const MAX_BYTES = 4096; // bytes, no caracteres: 5 resultados de 3 números caben con holgura
 
 const cabeceras = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
 const fallo = (codigo: ErrorApi['codigo'], error: string, status: number) =>
@@ -29,13 +30,13 @@ export function esProbabilidades(x: unknown): x is Probabilidades {
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   let direccion: string | undefined;
   try { direccion = clientAddress; } catch { /* pruebas */ }
-  if (!permitir(claveCliente(request.headers, direccion), limitePorMinuto())) {
+  if (!permitir(claveCliente(request.headers, direccion), limiteCombinarPorMinuto(), Date.now(), 'combinar')) {
     return fallo('demasiadas_consultas', 'Ha enviado muchas consultas seguidas. Espere un minuto e intente de nuevo.', 429);
   }
-  const texto = await request.text();
-  if (texto.length > MAX_BYTES) return fallo('imagen_grande', 'La solicitud es demasiado grande.', 413);
+  const bytes = await leerCuerpoLimitado(request, MAX_BYTES);
+  if (!bytes) return fallo('imagen_grande', 'La solicitud es demasiado grande.', 413);
   let cuerpo: unknown;
-  try { cuerpo = JSON.parse(texto); } catch { return fallo('error', 'No pudimos leer la solicitud.', 400); }
+  try { cuerpo = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); } catch { return fallo('error', 'No pudimos leer la solicitud.', 400); }
   const lista = (cuerpo as { fotos?: unknown })?.fotos;
   if (!Array.isArray(lista) || lista.length < 2 || lista.length > MAX_FOTOS || !lista.every(esProbabilidades)) {
     return fallo('error', `Envíe entre 2 y ${MAX_FOTOS} resultados válidos.`, 400);

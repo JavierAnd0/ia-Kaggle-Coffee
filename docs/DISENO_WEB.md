@@ -18,7 +18,7 @@ Un productor de café (frecuentemente mayor, con poca práctica con la tecnolog�
 ```
 Navegador (celular)                         Servidor Node (Astro, adaptador node)
 ┌───────────────────────────┐   foto JPEG   ┌────────────────────────────────────────────┐
-│ Isla React <Diagnostico>  │  (≤1920 px)   │ POST /api/diagnostico                      │
+│ Isla React <Diagnostico>  │  (≤1280 px)   │ POST /api/diagnostico                      │
 │  inicio→previa→analizando │ ────────────▶ │  1 límite de uso  2 tamaño  3 firma de bytes│
 │  →resultado | error       │               │  4 Predictor.predecir()  ◀── PUERTO         │
 │  voz · WhatsApp · guía    │ ◀──────────── │  5 decidir() → veredicto prudente           │
@@ -40,7 +40,7 @@ Navegador (celular)                         Servidor Node (Astro, adaptador node
 | Un resultado «sana» no tranquiliza del todo | Redacción de seguridad | El recall de roya es 0,52: la pantalla avisa que «no garantiza que la planta esté sana». |
 | Contenido agronómico en `conocimiento.json` | *Content as data* + validación | Un agrónomo puede revisarlo sin tocar código; `tests/guia.test.ts` valida su estructura y la longitud de los pasos. |
 | Interfaz como máquina de estados (`useReducer`) | *State machine* | Un paso por pantalla, sin estados imposibles; el foco pasa al título de cada paso (lectores de pantalla). |
-| La foto se reduce en el celular a 1920 px | *Compresión en el borde* | ~200–400 KB en vez de varios MB. Se eligió 1920 (no 1024) porque las fotos de entrenamiento medían 1920×1080: con el modelo real, reducir a 1024 px desviaba las probabilidades hasta 0,10 respecto a Keras y a 1920 px hasta 0,06. Se corrige la orientación EXIF. |
+| La foto se reduce en el celular a 1280 px (JPEG calidad 0,8) | *Compresión en el borde* | ~100–200 KB en vez de varios MB. Antes se enviaba a 1920 px y calidad 0,85 (~200–400 KB). Con el modelo real, frente a Keras: 1024 px desviaba las probabilidades hasta 0,10; 1920 px hasta 0,060; 1280 px a 0,8 hasta 0,075, con la misma clase en todas las fotos de paridad. Se aceptó ese pequeño aumento para ahorrar datos móviles (el servidor reduce a 224 px de todas formas). Se corrige la orientación EXIF. En el servidor, las fotos de más de 2000 px (subidas sin pasar por el celular) se reducen con sharp antes del redimensionado bilineal; las de ≤ 2000 px no se tocan, así que la paridad no cambia. |
 | Preprocesamiento replicado a mano (`preprocesar.ts`) | *Paridad entrenamiento/servicio* | `sharp` redimensiona con otro filtro que `tf.image.resize`; se implementó el bilineal igual que TensorFlow. Medido sobre fotos reales: diferencia máxima 0,03 en escala −1…1 (≈1 nivel de gris, por el decodificador JPEG). |
 | ONNX Runtime en lugar de TF.js | Elección técnica | El conversor TF.js no soporta Keras 3 (`.keras`); `model.export(format='onnx')` sí, y Keras vs ONNX dio diferencia 0,0. Runtime nativo, rápido, sin conversor frágil. |
 | Varias hojas de la misma planta | *Agregación de evidencia* (`lib/combinar.ts`, `/api/combinar`) | Una sola foto es ruidosa. Se promedian las probabilidades de 2–5 hojas; el servidor recalcula veredicto y guía (misma lógica que con una foto) y la API recibe solo números, no imágenes. Si las hojas apuntan a clases distintas, el promedio baja la seguridad y la pantalla avisa. En simulación con fotos de prueba, el acierto pasó de 0,58 (1 hoja) a 0,68 (2) y 0,73 (3), pero con más hojas sube la frecuencia de «no estoy seguro» (concluyente 69 % → 41 %). **No se midió con plantas reales**: RoCoLe no tiene varias hojas de una planta con la misma etiqueta. |
@@ -69,7 +69,7 @@ Lo recopiló un agente de IA con búsqueda web (Cenicafé, FNC, UPR, SENASICA, U
 2. **Revisión agronómica** de `web/src/data/conocimiento.json` y de la sección «En Colombia» (variedades, umbrales, contactos reales con teléfonos).
 3. **Validar con fotos de cultivos colombianos (arábica)**: medir exactitud y calibrar los umbrales de `decision.ts` con las probabilidades reales de validación (hoy son un punto de partida conservador, no calibrado).
 4. **Prueba con productores reales** (lectura, botones, voz) y ajuste de lenguaje; posiblemente ampliar a otros países (hoy los contactos son de Colombia, Perú, México y Centroamérica solo como sitios oficiales).
-5. **Desplegar** (Dockerfile incluido, no probado aquí) con `PREDICTOR=modelo`, HTTPS y, si hay mucho tráfico, un límite de uso compartido (el actual vive en memoria del proceso).
+5. **Desplegar** (Dockerfile incluido y probado: usuario sin privilegios, verificación de salud en `/api/salud`) con `PREDICTOR=modelo`, `TRUST_PROXY=1`, HTTPS y, si hay mucho tráfico, un límite de uso compartido (el actual vive en memoria del proceso).
 6. Mejoras posibles: funcionar sin conexión (service worker), más enfermedades (ojo de gallo, mancha de hierro), recomendar tomar foto del envés. Ya implementado: varias hojas por planta y aviso de calidad de la foto; falta validar ambos con fotos reales de productores (umbrales de calidad y beneficio de combinar).
 
 ## 6b. Plan para mejorar el modelo

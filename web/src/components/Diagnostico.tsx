@@ -3,8 +3,9 @@ import type { Calidad } from '../lib/calidad';
 import { hayProblema } from '../lib/calidad';
 import { MAX_FOTOS } from '../lib/combinar';
 import { medirCalidad, reducirImagen } from '../lib/imagen';
+import { pedirJson } from '../lib/pedir';
 import type { Probabilidades } from '../lib/predictor/tipos';
-import type { ErrorApi, RespuestaDiagnostico } from '../lib/tipos';
+import type { RespuestaDiagnostico } from '../lib/tipos';
 import { Camara, Galeria, Hoja } from './Iconos';
 import Resultado from './Resultado';
 
@@ -18,13 +19,14 @@ type Estado =
   | { fase: 'inicio' }
   | { fase: 'previa'; foto: Blob; url: string; calidad: Calidad | null }
   | { fase: 'analizando'; url: string }
-  | { fase: 'resultado'; datos: RespuestaDiagnostico; url: string }
+  /** `hojasCombinadas`: cuántas hojas resume el resultado (1 si es solo la última foto). */
+  | { fase: 'resultado'; datos: RespuestaDiagnostico; url: string; hojasCombinadas: number; combinarFallo: boolean }
   | { fase: 'error'; mensaje: string; url?: string };
 
 type Accion =
   | { tipo: 'foto'; foto: Blob; url: string; calidad: Calidad | null }
   | { tipo: 'analizar'; url: string }
-  | { tipo: 'listo'; datos: RespuestaDiagnostico; url: string }
+  | { tipo: 'listo'; datos: RespuestaDiagnostico; url: string; hojasCombinadas: number; combinarFallo: boolean }
   | { tipo: 'fallo'; mensaje: string; url?: string }
   | { tipo: 'inicio' };
 
@@ -32,7 +34,7 @@ function reducir(_: Estado, a: Accion): Estado {
   switch (a.tipo) {
     case 'foto': return { fase: 'previa', foto: a.foto, url: a.url, calidad: a.calidad };
     case 'analizar': return { fase: 'analizando', url: a.url };
-    case 'listo': return { fase: 'resultado', datos: a.datos, url: a.url };
+    case 'listo': return { fase: 'resultado', datos: a.datos, url: a.url, hojasCombinadas: a.hojasCombinadas, combinarFallo: a.combinarFallo };
     case 'fallo': return { fase: 'error', mensaje: a.mensaje, url: a.url };
     default: return { fase: 'inicio' };
   }
@@ -59,7 +61,7 @@ export default function Diagnostico() {
   const titulo = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
-    fetch('/api/salud').then((r) => r.json()).then((j) => fijarModoPrueba(Boolean(j.modoSimulado))).catch(() => fijarModoPrueba(null));
+    void pedirJson<{ modoSimulado?: boolean }>('/api/salud', {}).then((r) => fijarModoPrueba(r.ok ? Boolean(r.datos.modoSimulado) : null));
   }, []);
 
   // La URL de la foto se reutiliza en varias fases; solo se libera al cambiar de foto o al salir.
@@ -81,7 +83,8 @@ export default function Diagnostico() {
 
   async function alElegir(archivo?: File) {
     if (!archivo) return;
-    if (!archivo.type.startsWith('image/')) { enviar({ tipo: 'fallo', mensaje: 'Ese archivo no es una foto. Elija una imagen.' }); return; }
+    // Algunos celulares entregan la foto sin tipo (type vacío): se acepta y el servidor revisa los bytes.
+    if (archivo.type && !archivo.type.startsWith('image/')) { enviar({ tipo: 'fallo', mensaje: 'Ese archivo no es una foto. Elija una imagen.' }); return; }
     try {
       const reducida = await reducirImagen(archivo);
       const calidad = await medirCalidad(reducida);
@@ -94,29 +97,20 @@ export default function Diagnostico() {
   }
 
   async function combinar(lista: Probabilidades[]): Promise<RespuestaDiagnostico | null> {
-    try {
-      const r = await fetch('/api/combinar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fotos: lista }) });
-      return r.ok ? ((await r.json()) as RespuestaDiagnostico) : null;
-    } catch {
-      return null;
-    }
+    const r = await pedirJson<RespuestaDiagnostico>('/api/combinar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fotos: lista }) });
+    return r.ok ? r.datos : null;
   }
 
   async function analizar(foto: Blob, url: string) {
     enviar({ tipo: 'analizar', url });
-    try {
-      const respuesta = await fetch('/api/diagnostico', { method: 'POST', headers: { 'Content-Type': foto.type || 'image/jpeg' }, body: foto });
-      const cuerpo = (await respuesta.json()) as RespuestaDiagnostico | ErrorApi;
-      if (!respuesta.ok) { enviar({ tipo: 'fallo', mensaje: (cuerpo as ErrorApi).error ?? 'Algo salió mal. Intente de nuevo.', url }); return; }
-      const datos = cuerpo as RespuestaDiagnostico;
-      const lista = [...hojas, datos.probabilidades];
-      fijarHojas(lista);
-      // Con 2 o más hojas se muestra el resultado combinado; si falla, se muestra el de esta hoja.
-      const combinado = lista.length > 1 ? await combinar(lista) : null;
-      enviar({ tipo: 'listo', datos: combinado ?? datos, url });
-    } catch {
-      enviar({ tipo: 'fallo', mensaje: 'No hay conexión con el servicio. Revise su señal e intente de nuevo.', url });
-    }
+    const r = await pedirJson<RespuestaDiagnostico>('/api/diagnostico', { method: 'POST', headers: { 'Content-Type': foto.type || 'image/jpeg' }, body: foto });
+    if (!r.ok) { enviar({ tipo: 'fallo', mensaje: r.mensaje, url }); return; }
+    const datos = r.datos;
+    const lista = [...hojas, datos.probabilidades];
+    fijarHojas(lista);
+    // Con 2 o más hojas se muestra el resultado combinado; si falla, se muestra el de esta hoja (y se dice).
+    const combinado = lista.length > 1 ? await combinar(lista) : null;
+    enviar({ tipo: 'listo', datos: combinado ?? datos, url, hojasCombinadas: combinado ? lista.length : 1, combinarFallo: lista.length > 1 && !combinado });
   }
 
   const entradas = (
@@ -183,8 +177,11 @@ export default function Diagnostico() {
       {estado.fase === 'resultado' && (
         <>
           <h2 ref={titulo} tabIndex={-1} style={{ outline: 'none' }}>
-            {hojas.length > 1 ? `Paso 3: resultado de ${hojas.length} hojas` : 'Paso 3: resultado'}
+            {estado.hojasCombinadas > 1 ? `Paso 3: resultado de ${estado.hojasCombinadas} hojas` : estado.combinarFallo ? 'Paso 3: resultado de esta hoja' : 'Paso 3: resultado'}
           </h2>
+          {estado.combinarFallo && (
+            <p className="aviso" role="note" data-testid="sin-combinar">No pudimos juntar los resultados de las {hojas.length} hojas. Este es el resultado solo de la última foto. Puede revisar otra hoja para intentarlo de nuevo.</p>
+          )}
           <div className="vista-previa" style={{ marginBottom: '1rem' }}><img src={estado.url} alt="Última foto revisada" /></div>
           <Resultado datos={estado.datos} puedeAgregar={hojas.length < MAX_FOTOS} alAgregar={otraHoja} alReiniciar={otraPlanta} />
         </>

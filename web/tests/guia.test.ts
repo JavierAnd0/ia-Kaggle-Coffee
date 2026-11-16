@@ -13,6 +13,13 @@ describe('conocimiento.json', () => {
     expect(errores.join(' ')).toMatch(/lista vacía/);
     expect(errores.join(' ')).toMatch(/f999/);
   });
+  it('no nombra ingredientes activos ni promete curar (eso lo decide el técnico)', () => {
+    const texto = JSON.stringify(base.clases).toLowerCase();
+    expect(texto).not.toMatch(/propargit|azufre|estrobilur|triazol|desde adentro|curar/);
+    for (const c of Object.values(base.clases)) {
+      for (const t of c.productos.tipos) expect(t.advertencia.toLowerCase()).toContain('consulte a un técnico o agrónomo');
+    }
+  });
   it('no incluye dosis ni precios', () => {
     const texto = JSON.stringify(base.clases).toLowerCase();
     expect(texto).not.toMatch(/\b\d+\s?(ml|cc|g|gr|kg|l)\b\s?(por|\/)/);

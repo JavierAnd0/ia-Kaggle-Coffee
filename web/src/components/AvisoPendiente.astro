@@ -1,0 +1,8 @@
+---
+import { AVISO_PENDIENTE, contenidoPendiente } from '../lib/guia';
+---
+{contenidoPendiente && (
+  <p class="nota" role="note" data-testid="aviso-pendiente">
+    <strong>{AVISO_PENDIENTE}</strong> Algunos datos de esta guía aún no se han comparado con los documentos originales. Consulte a un técnico o agrónomo antes de aplicar cualquier producto.
+  </p>
+)}

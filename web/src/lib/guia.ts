@@ -34,6 +34,10 @@ export interface Conocimiento {
 
 export const base = conocimiento as unknown as Conocimiento;
 
+/** Mientras queden puntos en `por_verificar`, las guías muestran que falta la revisión de un agrónomo. */
+export const contenidoPendiente = (base.por_verificar?.length ?? 0) > 0;
+export const AVISO_PENDIENTE = 'Contenido pendiente de revisión por un agrónomo.';
+
 export const NOMBRE_CORTO: Record<Clase, string> = {
   healthy: 'Hoja sana',
   rust: 'Roya',

@@ -9,6 +9,14 @@ import sharp from 'sharp';
 
 export const LADO = 224;
 const MAX_PIXELES = 40_000_000; // protege la memoria ante imágenes gigantes
+/**
+ * Lado máximo tras decodificar. Las fotos de entrenamiento medían 1920×1080 y el celular envía
+ * ≤ 1280 px, así que esto solo afecta a fotos enormes subidas sin reducir (p. ej. 48 MP): se
+ * reducen con sharp antes del redimensionado bilineal a mano. Sin esto, una foto de 40 MP ocupa
+ * ~120 MB en RGB crudo. Las fotos ≤ 2000 px (incluidas las de paridad, 1920 px) NO se tocan, así
+ * que la paridad con el entrenamiento se mantiene (tests/onnx.test.ts lo comprueba).
+ */
+export const MAX_LADO_DECODIFICADO = 2000;
 
 export interface ImagenRGB {
   datos: Uint8Array; // RGB intercalado, 3 bytes por píxel
@@ -29,6 +37,7 @@ export async function decodificarRGB(bytes: Uint8Array): Promise<ImagenRGB> {
   try {
     resultado = await sharp(bytes, { limitInputPixels: MAX_PIXELES })
       .rotate() // respeta la orientación EXIF (las fotos de celular suelen venir "de lado")
+      .resize({ width: MAX_LADO_DECODIFICADO, height: MAX_LADO_DECODIFICADO, fit: 'inside', withoutEnlargement: true })
       .removeAlpha()
       .toColourspace('srgb')
       .raw()

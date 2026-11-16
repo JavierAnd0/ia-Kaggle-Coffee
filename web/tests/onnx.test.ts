@@ -42,7 +42,7 @@ describe.skipIf(!hayModelo || !existsSync(archivoParidad))('paridad con Keras', 
     }
   });
 
-  it('la imagen reducida a 1920 px y recomprimida (como la envía el celular) cambia poco el resultado', async () => {
+  it('la imagen reducida a 1920 px y recomprimida (como la enviaba antes el celular) cambia poco el resultado', async () => {
     const predictor = await PredictorOnnx.cargar(dir);
     let peor = 0;
     for (const caso of casos) {
@@ -51,6 +51,32 @@ describe.skipIf(!hayModelo || !existsSync(archivoParidad))('paridad con Keras', 
       for (const c of CLASES) peor = Math.max(peor, Math.abs(r.probabilidades[c] - caso.probabilidades[c]));
     }
     console.log(`Diferencia máxima con imagen reducida: ${peor.toFixed(3)}`);
+    expect(peor).toBeLessThan(0.12);
+  });
+
+  it('la imagen reducida a 1280 px calidad 0,8 (lo que envía hoy el celular) también cambia poco', async () => {
+    const predictor = await PredictorOnnx.cargar(dir);
+    let peor = 0;
+    for (const caso of casos) {
+      const reducida = await sharp(readFileSync(path.join(repo, caso.archivo))).resize({ width: 1280, height: 1280, fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 80 }).toBuffer();
+      const r = await predictor.predecir(reducida);
+      for (const c of CLASES) peor = Math.max(peor, Math.abs(r.probabilidades[c] - caso.probabilidades[c]));
+      expect(claseMayor(r.probabilidades)).toBe(claseMayor(caso.probabilidades));
+    }
+    console.log(`Diferencia máxima con imagen de 1280 px: ${peor.toFixed(3)}`);
+    expect(peor).toBeLessThan(0.12);
+  });
+
+  it('una foto enorme (3840 px) se reduce a 2000 px en el servidor y da casi el mismo resultado', async () => {
+    const predictor = await PredictorOnnx.cargar(dir);
+    let peor = 0;
+    for (const caso of casos) {
+      const enorme = await sharp(readFileSync(path.join(repo, caso.archivo))).resize({ width: 3840 }).jpeg({ quality: 95 }).toBuffer();
+      const r = await predictor.predecir(enorme);
+      for (const c of CLASES) peor = Math.max(peor, Math.abs(r.probabilidades[c] - caso.probabilidades[c]));
+      expect(claseMayor(r.probabilidades)).toBe(claseMayor(caso.probabilidades));
+    }
+    console.log(`Diferencia máxima con foto de 3840 px: ${peor.toFixed(3)}`);
     expect(peor).toBeLessThan(0.12);
   });
 });

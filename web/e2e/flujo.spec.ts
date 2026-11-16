@@ -27,8 +27,8 @@ test('flujo completo: foto → vista previa → resultado con porcentajes y guí
   // La foto revisada debe seguir visible (regresión: antes se liberaba su URL demasiado pronto)
   expect(await page.getByAltText('Foto revisada').evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(0);
   // Las barras deben tener ancho visible
-  const anchos = await page.locator('.barras .relleno').evaluateAll((els) => els.map((e) => (e as HTMLElement).getBoundingClientRect().width));
-  expect(Math.max(...anchos)).toBeGreaterThan(5);
+  // (las barras crecen con una animación desde 0: se espera a que la terminen)
+  await expect.poll(async () => Math.max(...await page.locator('.barras .relleno').evaluateAll((els) => els.map((e) => (e as HTMLElement).getBoundingClientRect().width)))).toBeGreaterThan(5);
   await expect(page.getByRole('link', { name: /WhatsApp/ })).toHaveAttribute('href', /wa\.me/);
   await expect(page.getByText('no es un diagnóstico').or(page.getByText('no un diagnóstico')).first()).toBeVisible();
 
@@ -57,6 +57,7 @@ test('las guías se leen sin enviar fotos y citan fuentes', async ({ page }) => 
     await page.goto(`/guias/${clase}`);
     await expect(page.getByRole('heading', { name: 'Qué hacer hoy' })).toBeVisible();
     await expect(page.getByText('De dónde sale esta información')).toBeVisible();
+    await expect(page.getByTestId('aviso-pendiente')).toContainText('pendiente de revisión por un agrónomo');
   }
 });
 
@@ -105,6 +106,8 @@ test('varias hojas de la misma planta: se combinan y se muestra cada una', async
   await expect(page.getByText(/Hoja 2:/)).toBeVisible();
   const valores = await page.locator('.barras .valor').allInnerTexts();
   expect(valores.map((v) => parseInt(v, 10)).reduce((a, b) => a + b, 0)).toBe(100);
+  // Se espera a que termine la animación de entrada (opacidad): si no, axe mide contraste a medio aparecer.
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'));
   const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([]);
   await page.getByRole('button', { name: /otra planta/ }).click();
@@ -146,9 +149,12 @@ test('/api/combinar valida lo que recibe', async ({ request }) => {
   expect(seis.status()).toBe(400);
   const texto = await request.post('/api/combinar', { data: 'esto no es json', headers: { 'Content-Type': 'application/json' } });
   expect(texto.status()).toBe(400);
-  // Astro bloquea POST con tipos de formulario (text/plain) desde otro origen: protección contra CSRF
-  const form = await request.post('/api/combinar', { data: 'x', headers: { 'Content-Type': 'text/plain' } });
+  // Astro bloquea POST con tipos de formulario (text/plain) desde otro origen: protección contra CSRF.
+  // Desde Astro 7 se decide por Origin / Sec-Fetch-Site (los navegadores siempre los envían).
+  const form = await request.post('/api/combinar', { data: 'x', headers: { 'Content-Type': 'text/plain', Origin: 'https://otro-sitio.example' } });
   expect(form.status()).toBe(403);
+  const formSitio = await request.post('/api/combinar', { data: 'x', headers: { 'Content-Type': 'text/plain', 'Sec-Fetch-Site': 'cross-site' } });
+  expect(formSitio.status()).toBe(403);
 });
 
 // Debe ir al final: agota el límite de uso del servidor de pruebas.
