@@ -7,6 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { CLASES, type Clase, type Predictor, type ResultadoPredictor } from './tipos';
 import { LADO, prepararEntrada } from './preprocesar';
+import { inferenciasSimultaneas, Semaforo } from '../semaforo';
 
 export const ARCHIVOS_MODELO = ['cafe_robusta.onnx', 'labels.json', 'model_card.json'] as const;
 
@@ -17,6 +18,8 @@ export function modeloDisponible(dir: string): boolean {
 export class PredictorOnnx implements Predictor {
   readonly nombre = 'onnx';
   readonly origen = 'modelo' as const;
+  /** Limita cuántas fotos se decodifican y pasan por el modelo a la vez (memoria y CPU acotadas). */
+  private readonly turno = new Semaforo(inferenciasSimultaneas());
 
   private constructor(
     private readonly sesion: import('onnxruntime-node').InferenceSession,
@@ -41,7 +44,11 @@ export class PredictorOnnx implements Predictor {
     return new PredictorOnnx(sesion, ort, etiquetas, tarjeta.version ?? 'sin-version', lado);
   }
 
-  async predecir(imagen: Uint8Array): Promise<ResultadoPredictor> {
+  predecir(imagen: Uint8Array): Promise<ResultadoPredictor> {
+    return this.turno.usar(() => this.predecirAhora(imagen));
+  }
+
+  private async predecirAhora(imagen: Uint8Array): Promise<ResultadoPredictor> {
     const entrada = await prepararEntrada(imagen, this.lado);
     const tensor = new this.ort.Tensor('float32', entrada, [1, this.lado, this.lado, 3]);
     const salida = await this.sesion.run({ [this.sesion.inputNames[0]]: tensor });

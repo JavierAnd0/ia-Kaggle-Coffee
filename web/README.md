@@ -28,6 +28,7 @@ npm run build && npm start
 | `TRUST_PROXY` | `1` | Detrás de un proxy inverso/HTTPS: toma la IP del cliente del **último** valor de `X-Forwarded-For` (el que agrega el proxy de Railway, Render, Fly…; los primeros los puede inventar el cliente). Sin esto, todos comparten la IP del proxy. Actívelo **solo** si hay un proxy de confianza delante. |
 | `CABECERA_IP` | nombre de cabecera | Opcional, con `TRUST_PROXY=1`: usa esa cabecera en vez de `X-Forwarded-For` (p. ej. `x-real-ip`, `fly-client-ip`, `cf-connecting-ip`). Úsela solo si su proxy la **reescribe** siempre. |
 | `LIMITE_POR_MINUTO` | número (20) | Fotos por minuto por IP en `/api/diagnostico`. `/api/combinar` (no corre el modelo) tiene un cupo aparte del triple. |
+| `INFERENCIAS_SIMULTANEAS` | número (2) | Cuántas fotos se decodifican y pasan por el modelo a la vez (1–4); las demás esperan su turno. Evita que varias fotos simultáneas agoten la memoria. |
 
 ### Límite de uso
 
