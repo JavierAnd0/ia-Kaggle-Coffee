@@ -27,8 +27,8 @@ test('flujo completo: foto → vista previa → resultado con porcentajes y guí
   // La foto revisada debe seguir visible (regresión: antes se liberaba su URL demasiado pronto)
   expect(await page.getByAltText('Foto revisada').evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(0);
   // Las barras deben tener ancho visible
-  const anchos = await page.locator('.barras .relleno').evaluateAll((els) => els.map((e) => (e as HTMLElement).getBoundingClientRect().width));
-  expect(Math.max(...anchos)).toBeGreaterThan(5);
+  // (las barras crecen con una animación desde 0: se espera a que la terminen)
+  await expect.poll(async () => Math.max(...await page.locator('.barras .relleno').evaluateAll((els) => els.map((e) => (e as HTMLElement).getBoundingClientRect().width)))).toBeGreaterThan(5);
   await expect(page.getByRole('link', { name: /WhatsApp/ })).toHaveAttribute('href', /wa\.me/);
   await expect(page.getByText('no es un diagnóstico').or(page.getByText('no un diagnóstico')).first()).toBeVisible();
 
@@ -149,9 +149,12 @@ test('/api/combinar valida lo que recibe', async ({ request }) => {
   expect(seis.status()).toBe(400);
   const texto = await request.post('/api/combinar', { data: 'esto no es json', headers: { 'Content-Type': 'application/json' } });
   expect(texto.status()).toBe(400);
-  // Astro bloquea POST con tipos de formulario (text/plain) desde otro origen: protección contra CSRF
-  const form = await request.post('/api/combinar', { data: 'x', headers: { 'Content-Type': 'text/plain' } });
+  // Astro bloquea POST con tipos de formulario (text/plain) desde otro origen: protección contra CSRF.
+  // Desde Astro 7 se decide por Origin / Sec-Fetch-Site (los navegadores siempre los envían).
+  const form = await request.post('/api/combinar', { data: 'x', headers: { 'Content-Type': 'text/plain', Origin: 'https://otro-sitio.example' } });
   expect(form.status()).toBe(403);
+  const formSitio = await request.post('/api/combinar', { data: 'x', headers: { 'Content-Type': 'text/plain', 'Sec-Fetch-Site': 'cross-site' } });
+  expect(formSitio.status()).toBe(403);
 });
 
 // Debe ir al final: agota el límite de uso del servidor de pruebas.
