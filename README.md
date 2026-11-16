@@ -15,7 +15,7 @@ Proyecto medio: clasificación de enfermedades en hojas de café con el dataset 
 - `docs/informe_proyecto_medio.docx`: informe académico con todos los resultados.
 
 ## Web «Cartilla de la Hoja»
-En `web/` hay una aplicación (Astro + React + Node.js) que recibe la foto de una hoja y devuelve a qué se parece, con qué seguridad y una guía de pasos para el productor. Es una orientación inicial, no un diagnóstico, y el modelo se entrenó con café **robusta**. Ver `web/README.md` y `docs/DISENO_WEB.md`. Para conectar el modelo real: `notebooks/exportar_modelo.ipynb`.
+En `web/` hay una aplicación (Astro + React + Node.js) que recibe la foto de una hoja y devuelve a qué se parece, con qué seguridad y una guía de pasos para el productor. Es una orientación inicial, no un diagnóstico, y el modelo se entrenó con café **robusta**. Ver `web/README.md` y `docs/DISENO_WEB.md`. Modelo actual en `web/model/`; para mejorarlo: `notebooks/experimentos_mejora.ipynb` (resolución × semillas × conjunto de modelos) y `notebooks/exportar_modelo.ipynb` (reexportar la receta actual).
 
 ## Uso
 ```bash

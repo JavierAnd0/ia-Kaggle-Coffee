@@ -7,7 +7,8 @@ DISCLAIMER = ("Modelo entrenado con hojas de café ROBUSTA (dataset RoCoLe). No 
               "café arábica ni con cultivos colombianos. Es una orientación inicial, no un diagnóstico.")
 
 
-def export_model(model, li: dict, hp, metrics: dict, out_dir, version: str | None = None) -> Path:
+def export_model(model, li: dict, hp, metrics: dict, out_dir, version: str | None = None,
+                 input_size: int | None = None, notas: dict | None = None) -> Path:
     """Guarda `cafe_robusta.keras`, `labels.json` y `model_card.json` en `out_dir`."""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -16,9 +17,9 @@ def export_model(model, li: dict, hp, metrics: dict, out_dir, version: str | Non
     (out / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, indent=2))
     card = {
         "version": version or f"4b-{date.today().isoformat()}",
-        "input_size": [224, 224], "preprocess": "mobilenet_v2 (x/127.5 - 1)", "labels": labels,
+        "input_size": [input_size or int(model.input_shape[1])] * 2, "preprocess": "mobilenet_v2 (x/127.5 - 1)", "labels": labels,
         "hyperparameters": {k: v for k, v in hp.values.items() if not k.startswith("tuner/")},
-        "metrics": metrics, "disclaimer": DISCLAIMER,
+        "metrics": metrics, "disclaimer": DISCLAIMER, **(notas or {}),
     }
     (out / "model_card.json").write_text(json.dumps(card, ensure_ascii=False, indent=2))
     return out
@@ -30,13 +31,14 @@ def export_onnx(model, out_dir) -> Path:
     import tensorflow as tf
 
     path = Path(out_dir) / "cafe_robusta.onnx"
-    model.predict(np.zeros((1, 224, 224, 3), "float32"), verbose=0)   # el exportador exige haber llamado al modelo
+    lado = int(model.input_shape[1])
+    model.predict(np.zeros((1, lado, lado, 3), "float32"), verbose=0)   # el exportador exige haber llamado al modelo
     try:
         model.export(str(path), format="onnx")
     except Exception as error:                                          # Keras antiguo: ruta alternativa con tf2onnx
         print("model.export(onnx) falló, se usa tf2onnx:", type(error).__name__)
         import tf2onnx
-        firma = (tf.TensorSpec((None, 224, 224, 3), tf.float32, name="input"),)
+        firma = (tf.TensorSpec((None, lado, lado, 3), tf.float32, name="input"),)
 
         @tf.function(input_signature=firma)
         def inferir(x):
@@ -51,7 +53,8 @@ def verificar_onnx(model, onnx_path, n: int = 4) -> float:
     import numpy as np
     import onnxruntime as ort
 
-    x = (np.random.default_rng(0).random((n, 224, 224, 3)) * 2 - 1).astype("float32")
+    lado = int(model.input_shape[1])
+    x = (np.random.default_rng(0).random((n, lado, lado, 3)) * 2 - 1).astype("float32")
     sesion = ort.InferenceSession(str(onnx_path))
     onnx_out = sesion.run(None, {sesion.get_inputs()[0].name: x})[0]
     return float(np.abs(model.predict(x, verbose=0) - onnx_out).max())
@@ -64,7 +67,8 @@ def casos_paridad(model, hp, li: dict, df, por_clase: int = 2) -> list:
     from .model import BACKBONES
 
     muestra = df.groupby("label").head(por_clase).reset_index(drop=True)
-    ds = make_dataset(muestra, li, batch_size=1, preprocess=BACKBONES[hp.values["backbone"]][1])
+    ds = make_dataset(muestra, li, batch_size=1, preprocess=BACKBONES[hp.values["backbone"]][1],
+                      img_size=(int(model.input_shape[1]),) * 2)
     probs = model.predict(ds, verbose=0)
     nombres = sorted(li, key=li.get)
     from . import config

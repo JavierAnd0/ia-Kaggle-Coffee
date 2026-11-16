@@ -1,0 +1,50 @@
+[
+  {
+    "archivo": "data/coffee___healthy/C10P20E1.jpg",
+    "probabilidades": {
+      "healthy": 0.5655909776687622,
+      "red_spider_mite": 0.18548919260501862,
+      "rust": 0.24891984462738037
+    }
+  },
+  {
+    "archivo": "data/coffee___healthy/C10P27E1.jpg",
+    "probabilidades": {
+      "healthy": 0.9108068943023682,
+      "red_spider_mite": 0.03872278332710266,
+      "rust": 0.05047033727169037
+    }
+  },
+  {
+    "archivo": "data/coffee___red_spider_mite/C11P2E2.jpg",
+    "probabilidades": {
+      "healthy": 0.07887094467878342,
+      "red_spider_mite": 0.3649868667125702,
+      "rust": 0.5561422109603882
+    }
+  },
+  {
+    "archivo": "data/coffee___red_spider_mite/C11P31E2.jpg",
+    "probabilidades": {
+      "healthy": 0.013607707805931568,
+      "red_spider_mite": 0.6629268527030945,
+      "rust": 0.32346540689468384
+    }
+  },
+  {
+    "archivo": "data/coffee___rust/C10P20E2.jpg",
+    "probabilidades": {
+      "healthy": 0.19692930579185486,
+      "red_spider_mite": 0.6422939896583557,
+      "rust": 0.16077668964862823
+    }
+  },
+  {
+    "archivo": "data/coffee___rust/C10P20H1.jpg",
+    "probabilidades": {
+      "healthy": 0.08415962755680084,
+      "red_spider_mite": 0.4434015452861786,
+      "rust": 0.472438782453537
+    }
+  }
+]

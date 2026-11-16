@@ -18,6 +18,7 @@ export interface ResultadoPredictor {
 
 export interface Predictor {
   readonly nombre: string;
+  readonly version: string;
   readonly origen: ResultadoPredictor['origen'];
   predecir(imagen: Uint8Array): Promise<ResultadoPredictor>;
 }

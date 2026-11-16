@@ -2,7 +2,6 @@
 import tensorflow as tf
 
 from . import config
-from .config import IMG_SIZE
 
 BACKBONES = {
     "mobilenetv2": (tf.keras.applications.MobileNetV2, tf.keras.applications.mobilenet_v2.preprocess_input),
@@ -10,10 +9,11 @@ BACKBONES = {
 }
 
 
-def build_model(hp, num_classes: int) -> tf.keras.Model:
+def build_model(hp, num_classes: int, img_size=None) -> tf.keras.Model:
+    size = tuple(img_size or config.IMG_SIZE)
     name = hp.Choice("backbone", list(BACKBONES))
     base_cls, _ = BACKBONES[name]
-    base = base_cls(include_top=False, weights="imagenet" if config.PRETRAINED else None, input_shape=IMG_SIZE + (3,))
+    base = base_cls(include_top=False, weights="imagenet" if config.PRETRAINED else None, input_shape=size + (3,))
     base.trainable = False
     x = tf.keras.layers.GlobalAveragePooling2D()(base.output)
     x = tf.keras.layers.Dropout(hp.Float("dropout", 0.1, 0.5, step=0.1))(x)

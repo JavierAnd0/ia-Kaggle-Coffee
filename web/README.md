@@ -31,8 +31,10 @@ npm run build && npm start
 
 ## Conectar el modelo real
 
+El modelo exportado (versión 4b-2026-11-04) ya está en `web/model/`. Para reemplazarlo:
+
 1. Ejecute `notebooks/exportar_modelo.ipynb` en Colab (GPU T4, ~10 min) y descargue `modelo_cafe.zip`.
-2. Descomprima y copie `web/model/*` (`cafe_robusta.onnx`, `labels.json`, `model_card.json`, `paridad.json`) a esta carpeta `web/model/`.
+2. Descomprima y copie `web/model/*` (`cafe_robusta.onnx`, `labels.json`, `model_card.json`, `paridad.json`) a esta carpeta `web/model/`, y actualice `src/data/metricas.json` (una prueba avisa si quedan desactualizadas).
 3. `PREDICTOR=modelo npm run build && npm start` y abra `/api/salud`: debe decir `"predictor":"onnx","modoSimulado":false`.
 4. `npm test`: la prueba de paridad compara las probabilidades de Node con las de Keras.
 

@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+from . import config
 from .config import BATCH_SIZE, IMG_SIZE, SEED
 
 
@@ -21,12 +22,13 @@ def _augmenter() -> tf.keras.Sequential:
 
 def make_dataset(df: pd.DataFrame, label_index: dict, batch_size: int = BATCH_SIZE,
                  training: bool = False, augment: bool = False,
-                 preprocess=tf.keras.applications.mobilenet_v2.preprocess_input):
+                 preprocess=tf.keras.applications.mobilenet_v2.preprocess_input, img_size=None):
     """tf.data pipeline: rutas -> decode -> resize -> (augment) -> preprocess -> batch.
 
     Los pesos de normalización/augmentation NO se ajustan con val/test (sin leakage);
     `training=True` solo activa shuffle y `augment=True` solo debe usarse en train.
     """
+    size = tuple(img_size or config.IMG_SIZE)
     paths = df["filepath"].values
     y = df["label"].map(label_index).values.astype("int32")
     ds = tf.data.Dataset.from_tensor_slices((paths, y))
@@ -35,7 +37,7 @@ def make_dataset(df: pd.DataFrame, label_index: dict, batch_size: int = BATCH_SI
 
     def load(path, label):
         img = tf.io.decode_image(tf.io.read_file(path), channels=3, expand_animations=False)
-        img = tf.image.resize(img, IMG_SIZE)
+        img = tf.image.resize(img, size)
         return img, label
 
     ds = ds.map(load, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)

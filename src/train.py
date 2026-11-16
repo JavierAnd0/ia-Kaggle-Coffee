@@ -20,18 +20,18 @@ def class_weights(df: pd.DataFrame, li: dict) -> dict:
 
 
 def train_model(hp, train_df, val_df, li, epochs=30, use_class_weight=False,
-                finetune_epochs=0, verbose=0, weight_df=None):
+                finetune_epochs=0, verbose=0, weight_df=None, img_size=None, seed=None):
     """`weight_df`: datos reales con los que se calculan los pesos de clase (por defecto train_df);
     así las imágenes sintéticas no alteran los pesos y el efecto de la GAN queda aislado."""
-    tf.keras.utils.set_random_seed(SEED)
+    tf.keras.utils.set_random_seed(SEED if seed is None else seed)
     tf.keras.backend.clear_session()
     pre = BACKBONES[hp.values["backbone"]][1]
     bs = hp.values.get("batch_size", 32)
-    tr = make_dataset(train_df, li, bs, training=True, augment=True, preprocess=pre)
-    va = make_dataset(val_df, li, bs, preprocess=pre)
+    tr = make_dataset(train_df, li, bs, training=True, augment=True, preprocess=pre, img_size=img_size)
+    va = make_dataset(val_df, li, bs, preprocess=pre, img_size=img_size)
     cw = class_weights(train_df if weight_df is None else weight_df, li) if use_class_weight else None
     stop = lambda: tf.keras.callbacks.EarlyStopping("val_accuracy", patience=5, restore_best_weights=True)
-    model = build_model(hp, len(li))
+    model = build_model(hp, len(li), img_size)
     model.fit(tr, validation_data=va, epochs=epochs, class_weight=cw, callbacks=[stop()], verbose=verbose)
     if finetune_epochs:
         stage1_w, stage1_acc = model.get_weights(), model.evaluate(va, verbose=0)[1]
@@ -43,9 +43,9 @@ def train_model(hp, train_df, val_df, li, epochs=30, use_class_weight=False,
     return model
 
 
-def evaluate(model, hp, df, li) -> dict:
+def evaluate(model, hp, df, li, img_size=None) -> dict:
     pre = BACKBONES[hp.values["backbone"]][1]
-    ds = make_dataset(df, li, hp.values.get("batch_size", 32), preprocess=pre)
+    ds = make_dataset(df, li, hp.values.get("batch_size", 32), preprocess=pre, img_size=img_size)
     y_true = df["label"].map(li).values
     y_pred = model.predict(ds, verbose=0).argmax(1)
     f1s = f1_score(y_true, y_pred, average=None, labels=range(len(li)), zero_division=0)

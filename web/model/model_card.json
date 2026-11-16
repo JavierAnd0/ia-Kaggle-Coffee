@@ -1,0 +1,38 @@
+{
+  "version": "4b-2026-11-04",
+  "input_size": [
+    224,
+    224
+  ],
+  "preprocess": "mobilenet_v2 (x/127.5 - 1)",
+  "labels": [
+    "healthy",
+    "red_spider_mite",
+    "rust"
+  ],
+  "hyperparameters": {
+    "backbone": "mobilenetv2",
+    "dropout": 0.30000000000000004,
+    "units": 128,
+    "learning_rate": 0.007863429392778105,
+    "optimizer": "adam",
+    "batch_size": 16
+  },
+  "metrics": {
+    "val": {
+      "accuracy": 0.7295,
+      "f1_macro": 0.6787,
+      "f1_healthy": 0.8255,
+      "f1_red_spider_mite": 0.5294,
+      "f1_rust": 0.6811
+    },
+    "test": {
+      "accuracy": 0.6027,
+      "f1_macro": 0.529,
+      "f1_healthy": 0.7429,
+      "f1_red_spider_mite": 0.2778,
+      "f1_rust": 0.5663
+    }
+  },
+  "disclaimer": "Modelo entrenado con hojas de café ROBUSTA (dataset RoCoLe). No se ha validado con café arábica ni con cultivos colombianos. Es una orientación inicial, no un diagnóstico."
+}
