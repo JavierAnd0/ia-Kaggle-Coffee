@@ -1,38 +1,85 @@
 {
-  "version": "4b-2026-11-04",
+  "version": "5-2026-11-16-efficientnetv2b0",
   "input_size": [
     224,
     224
   ],
-  "preprocess": "mobilenet_v2 (x/127.5 - 1)",
+  "preprocess": "in-model rescaling; input in [-1,1] (bilinear resize to LxL, then x/127.5 - 1; the model rescales to [0,255] and applies the backbone normalization)",
   "labels": [
     "healthy",
     "red_spider_mite",
     "rust"
   ],
   "hyperparameters": {
-    "backbone": "mobilenetv2",
-    "dropout": 0.30000000000000004,
-    "units": 128,
-    "learning_rate": 0.007863429392778105,
-    "optimizer": "adam",
-    "batch_size": 16
+    "backbone": "efficientnetv2b0",
+    "lado": 224,
+    "batch_size": 32,
+    "dropout": 0.3,
+    "label_smoothing": 0.1,
+    "epocas_cabeza": 8,
+    "lr_cabeza": 0.001,
+    "epocas_ft": 30,
+    "lr_ft": 0.0001,
+    "weight_decay": 0.05,
+    "paciencia_ft": 10,
+    "precision_mixta": true,
+    "pretrained": true,
+    "optimizer": "adam (cabeza) -> adamw + coseno (todo)",
+    "loss": "categorical_crossentropy",
+    "imbalance": "class_weight balanced (train v5), sin sobremuestreo"
   },
   "metrics": {
     "val": {
-      "accuracy": 0.7295,
-      "f1_macro": 0.6787,
-      "f1_healthy": 0.8255,
-      "f1_red_spider_mite": 0.5294,
-      "f1_rust": 0.6811
+      "accuracy": 0.8959276018099548,
+      "f1_macro": 0.8369219797461133,
+      "f1_healthy": 0.9649122807017544,
+      "f1_red_spider_mite": 0.68,
+      "f1_rust": 0.8658536585365854
     },
     "test": {
-      "accuracy": 0.6027,
-      "f1_macro": 0.529,
-      "f1_healthy": 0.7429,
-      "f1_red_spider_mite": 0.2778,
-      "f1_rust": 0.5663
+      "accuracy": 0.8444444444444444,
+      "f1_macro": 0.7637375938029534,
+      "f1_healthy": 0.9382716049382716,
+      "f1_red_spider_mite": 0.5555555555555556,
+      "f1_rust": 0.7973856209150327
     }
   },
-  "disclaimer": "Modelo entrenado con hojas de café ROBUSTA (dataset RoCoLe). No se ha validado con café arábica ni con cultivos colombianos. Es una orientación inicial, no un diagnóstico."
+  "disclaimer": "Modelo entrenado con hojas de café ROBUSTA (dataset RoCoLe). No se ha validado con café arábica ni con cultivos colombianos. Es una orientación inicial, no un diagnóstico.",
+  "arquitectura": "efficientnetv2b0 (semilla 3)",
+  "splits": "data_splits/v5 (sin etiquetas contradictorias, 70/15/15 estratificado y agrupado por planta+MD5)",
+  "seleccion": {
+    "exportar": "individual",
+    "mejor_semilla": 3,
+    "regla": "conjunto solo si F1 macro val(conjunto) - F1 macro val(mejor individual) >= 0.01",
+    "tta": "no se usa en la web (solo se informa en validación)",
+    "val_f1_macro_mejor": 0.8369219797461133,
+    "val_f1_macro_conjunto": 0.8100908531501202
+  },
+  "validacion_semillas": {
+    "val_f1_macro_media": 0.8073515483080416,
+    "val_f1_macro_desv": 0.02810990896140452,
+    "val_exactitud_media": 0.8823529411764707,
+    "val_f1_macro_mejor": 0.8369219797461133,
+    "val_f1_macro_conjunto": 0.8100908531501202,
+    "val_exactitud_conjunto": 0.8823529411764706,
+    "val_f1_macro_mejor_tta_flip": 0.8361093399773175,
+    "val_f1_macro_conjunto_tta_flip": 0.8073501778628782
+  },
+  "test_ambos": {
+    "individual": {
+      "accuracy": 0.8444444444444444,
+      "f1_macro": 0.7637375938029534,
+      "f1_healthy": 0.9382716049382716,
+      "f1_red_spider_mite": 0.5555555555555556,
+      "f1_rust": 0.7973856209150327
+    },
+    "conjunto": {
+      "accuracy": 0.8444444444444444,
+      "f1_macro": 0.7568168823743436,
+      "f1_healthy": 0.9421487603305785,
+      "f1_red_spider_mite": 0.5283018867924528,
+      "f1_rust": 0.8
+    },
+    "imagenes": 225
+  }
 }

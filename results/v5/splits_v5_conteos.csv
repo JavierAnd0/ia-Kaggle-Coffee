@@ -1,0 +1,5 @@
+label,train,val,test,% train
+healthy,531,112,115,70.1
+rust,396,86,86,69.7
+red_spider_mite,108,23,24,69.7
+TOTAL,1035,221,225,69.9

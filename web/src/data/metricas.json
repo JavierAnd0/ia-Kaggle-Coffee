@@ -91,9 +91,9 @@
     "f1_macro": 0.68
   },
   "corrida_anterior": {
-    "exactitud_prueba": 0.69,
-    "f1_macro_prueba": 0.6,
-    "nota": "Una corrida anterior con la misma receta dio 0,69 de exactitud en prueba; la del modelo exportado dio 0,60. Entre corridas la cifra varía cerca de 9 puntos, por eso conviene tomar ambos valores como un rango."
+    "exactitud_prueba": 0.6,
+    "f1_macro_prueba": 0.53,
+    "nota": "La versión anterior del programa (MobileNetV2) acertó en 60 % con otra partición de las fotos. La actual se entrenó con datos limpios y se evaluó una sola vez; las dos cifras no son del todo comparables."
   },
   "niveles": {
     "alta": {

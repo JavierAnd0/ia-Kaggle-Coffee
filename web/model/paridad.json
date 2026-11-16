@@ -2,49 +2,49 @@
   {
     "archivo": "data/coffee___healthy/C10P20E1.jpg",
     "probabilidades": {
-      "healthy": 0.5655909776687622,
-      "red_spider_mite": 0.18548919260501862,
-      "rust": 0.24891984462738037
+      "healthy": 0.7183725833892822,
+      "red_spider_mite": 0.1315343827009201,
+      "rust": 0.15009310841560364
     }
   },
   {
-    "archivo": "data/coffee___healthy/C10P27E1.jpg",
+    "archivo": "data/coffee___healthy/C10P21E1.jpg",
     "probabilidades": {
-      "healthy": 0.9108068943023682,
-      "red_spider_mite": 0.03872278332710266,
-      "rust": 0.05047033727169037
+      "healthy": 0.9796804785728455,
+      "red_spider_mite": 0.013505960814654827,
+      "rust": 0.006813614629209042
     }
   },
   {
-    "archivo": "data/coffee___red_spider_mite/C11P2E2.jpg",
+    "archivo": "data/coffee___red_spider_mite/C10P25E2.jpg",
     "probabilidades": {
-      "healthy": 0.07887094467878342,
-      "red_spider_mite": 0.3649868667125702,
-      "rust": 0.5561422109603882
+      "healthy": 0.1547587364912033,
+      "red_spider_mite": 0.6113169193267822,
+      "rust": 0.23392434418201447
     }
   },
   {
-    "archivo": "data/coffee___red_spider_mite/C11P31E2.jpg",
+    "archivo": "data/coffee___red_spider_mite/C10P25H2.jpg",
     "probabilidades": {
-      "healthy": 0.013607707805931568,
-      "red_spider_mite": 0.6629268527030945,
-      "rust": 0.32346540689468384
+      "healthy": 0.31005948781967163,
+      "red_spider_mite": 0.4734978973865509,
+      "rust": 0.21644262969493866
     }
   },
   {
     "archivo": "data/coffee___rust/C10P20E2.jpg",
     "probabilidades": {
-      "healthy": 0.19692930579185486,
-      "red_spider_mite": 0.6422939896583557,
-      "rust": 0.16077668964862823
+      "healthy": 0.09228523075580597,
+      "red_spider_mite": 0.7459170818328857,
+      "rust": 0.1617976427078247
     }
   },
   {
     "archivo": "data/coffee___rust/C10P20H1.jpg",
     "probabilidades": {
-      "healthy": 0.08415962755680084,
-      "red_spider_mite": 0.4434015452861786,
-      "rust": 0.472438782453537
+      "healthy": 0.529984176158905,
+      "red_spider_mite": 0.3357992470264435,
+      "rust": 0.1342165768146515
     }
   }
 ]
