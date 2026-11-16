@@ -14,5 +14,10 @@ describe('notebooks', () => {
       expect(nb.nbformat).toBe(4);
       expect(nb.cells.length).toBeGreaterThan(0);
     });
+    it(`${f} no usa comandos mágicos de Colab (!, %) y funciona también en PyCharm/Jupyter`, () => {
+      const nb = JSON.parse(readFileSync(path.join(dir, f), 'utf8')) as { cells: { cell_type: string; source: string[] }[] };
+      const lineas = nb.cells.filter((c) => c.cell_type === 'code').flatMap((c) => c.source);
+      expect(lineas.filter((l) => /^\s*[!%]/.test(l))).toEqual([]);
+    });
   }
 });

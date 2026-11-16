@@ -24,5 +24,17 @@ jupyter notebook notebooks/proyecto_medio.ipynb   # o abrir en Colab
 ```
 El dataset está en `data/` (carpetas `coffee___healthy` 791, `coffee___rust` 602, `coffee___red_spider_mite` 167). Grupo = planta (`C10P10E1.jpg` -> `C10P10`, 390 plantas) para evitar leakage. `config.FAST_MODE = True` para pruebas rápidas.
 
+## Ejecutar el entrenamiento en tu computador (PyCharm, terminal)
+```bash
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python scripts/entrenar_experimentos.py --prueba        # 2-3 min: comprueba que todo está instalado (no entrena de verdad)
+python scripts/entrenar_experimentos.py                 # experimentos completos (reanudable: si se corta, repita el comando)
+```
+- **Sin GPU el entrenamiento completo puede tardar muchas horas o días.** Para eso conviene Colab (GPU T4/L4) o Kaggle Notebooks.
+- **Kaggle** (GPU gratis, sigue corriendo con el navegador cerrado): ver `docs/KAGGLE.md`.
+- Los notebooks (`notebooks/*.ipynb`) funcionan en Kaggle, Colab, PyCharm y Jupyter: encuentran solos la carpeta del proyecto. En Colab, con `USAR_DRIVE = True`, los modelos parciales se guardan en Google Drive y sobreviven a una desconexión.
+- Los modelos parciales se guardan en `checkpoints/` (o en `$CHECKPOINT_DIR`) y no se suben a Git.
+
 ## Estado
 Ejecutado de punta a punta en Colab (T4): Hyperband, validación cruzada, comparación de mejoras y evaluación en test. Pendiente solo completar en el informe los datos del autor (nombre, asignatura, docente, fecha) y revisar las referencias.
