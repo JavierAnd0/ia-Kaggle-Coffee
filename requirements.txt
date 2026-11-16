@@ -1,11 +1,18 @@
-tensorflow>=2.15
-keras-tuner>=1.4
-scikit-learn>=1.3
-pandas>=2.0
-numpy>=1.24
+# Python 3.11 o 3.12 (verificado con 3.12.13). Versiones exactas con las que se probó scripts/entrenar_v5.py
+# (entrenamiento + exportación ONNX + pruebas de la web). En Colab NO reinstale tensorflow: use el que trae
+# (Keras 3) para no romper CUDA; notebooks/entrenar_colab_v5.ipynb solo instala lo que falte (onnx, tf2onnx, onnxruntime).
+tensorflow==2.19.1
+keras==3.15.1
+tf2onnx==1.17.0
+onnx==1.22.0
+onnxruntime==1.32.0
+protobuf==5.29.6
+numpy==2.1.3
+scikit-learn==1.9.1
+pandas==3.1.1
+pillow==13.0.0
+h5py==3.16.0
+keras-tuner==1.4.8
+# Solo para los notebooks antiguos (informe): no los usa la receta v5
 matplotlib>=3.7
 kagglehub>=0.2
-pillow>=10.0
-onnx>=1.15
-tf2onnx>=1.16
-onnxruntime>=1.17
