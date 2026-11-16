@@ -79,3 +79,19 @@ def casos_paridad(model, hp, li: dict, df, por_clase: int = 2) -> list:
 
     return [{"archivo": relativa(f), "probabilidades": {n: float(p[i]) for i, n in enumerate(nombres)}}
             for f, p in zip(muestra["filepath"], probs)]
+
+
+def empaquetar(destino, carpetas, extras=(), excluir=(".keras",)) -> Path:
+    """Crea un .zip con las carpetas/archivos dados (rutas relativas a la raíz del proyecto), sin los .keras."""
+    import zipfile
+    from . import config
+
+    destino = Path(destino)
+    with zipfile.ZipFile(destino, "w", zipfile.ZIP_DEFLATED) as z:
+        for ruta in [Path(c) for c in carpetas] + [Path(e) for e in extras]:
+            absoluta = ruta if ruta.is_absolute() else config.ROOT / ruta
+            archivos = [absoluta] if absoluta.is_file() else sorted(p for p in absoluta.rglob("*") if p.is_file())
+            for a in archivos:
+                if a.suffix not in excluir:
+                    z.write(a, a.relative_to(config.ROOT) if config.ROOT in a.parents else a.name)
+    return destino

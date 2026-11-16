@@ -4,6 +4,8 @@ Motivo: la misma receta dio 0,69 y 0,60 de exactitud en prueba (variabilidad por
 (1920×1080) se reducen a 224×224, donde las manchas pequeñas de la roya casi desaparecen. Aquí se mide
 el efecto de la resolución con VARIAS semillas (media ± desviación) usando solo VALIDACIÓN; el test no se toca.
 """
+import json
+import os
 import time
 from pathlib import Path
 
@@ -43,31 +45,52 @@ def ensamblar(modelos: list, size: int) -> tf.keras.Model:
     return tf.keras.Model(entrada, tf.keras.layers.Average()(salidas), name="ensamble")
 
 
+def carpeta_checkpoints(dir_modelos=None) -> Path:
+    """Dónde se guardan modelos y resultados parciales. En Colab conviene que sea una carpeta de Google Drive
+    (variable de entorno CHECKPOINT_DIR o argumento) para que una desconexión no pierda lo ya entrenado."""
+    return Path(dir_modelos or os.environ.get("CHECKPOINT_DIR") or config.ROOT / "checkpoints")
+
+
 def correr_rejilla(hp, train_df, val_df, li, tamanos=(224, 320, 448), semillas=(0, 1, 2), epocas=30,
                    epocas_ft=10, n_extra=150, dir_modelos=None, verbose=0):
     """Receta 4b (sobremuestreo real + pesos de clase + ajuste fino) para cada tamaño y semilla.
 
-    Guarda cada modelo en `dir_modelos` (para armar el conjunto final sin reentrenar) y devuelve
-    (tabla por corrida, tabla resumen por tamaño).
+    REANUDABLE: cada corrida terminada deja en `dir_modelos` su modelo (.keras), sus probabilidades de
+    validación (.npy) y su fila de resultados (.json). Si se vuelve a ejecutar tras una desconexión o un
+    error, las corridas completas se saltan y solo se entrenan las que faltan.
+    Devuelve (tabla por corrida, tabla resumen por tamaño).
     """
-    dir_modelos = Path(dir_modelos or config.ROOT / "checkpoints")
+    dir_modelos = carpeta_checkpoints(dir_modelos)
     dir_modelos.mkdir(parents=True, exist_ok=True)
     minoritaria = train_df["label"].value_counts().idxmin()
-    filas, por_tamano = [], {}
+    total = len(tamanos) * len(semillas)
+    filas, por_tamano, hechas = [], {}, 0
     for tam in tamanos:
         probs_tam = []
         for semilla in semillas:
-            extra = train_df[train_df["label"] == minoritaria].sample(n_extra, replace=True, random_state=semilla)
-            tr = pd.concat([train_df, extra], ignore_index=True)
-            t0 = time.time()
-            m = train_model(hp, tr, val_df, li, epocas, True, epocas_ft, verbose, weight_df=train_df,
-                            img_size=(tam, tam), seed=semilla)
-            p = predecir(m, hp, val_df, li, tam)
-            m.save(dir_modelos / f"m_{tam}_s{semilla}.keras")
+            ruta_m = dir_modelos / f"m_{tam}_s{semilla}.keras"
+            ruta_p = dir_modelos / f"p_val_{tam}_s{semilla}.npy"
+            ruta_f = dir_modelos / f"fila_{tam}_s{semilla}.json"
+            hechas += 1
+            if ruta_m.exists() and ruta_p.exists() and ruta_f.exists():       # corrida completa: se reutiliza
+                p, fila = np.load(ruta_p), json.loads(ruta_f.read_text())
+                print(f"[{hechas}/{total}] tamaño {tam} semilla {semilla}: ya estaba hecha (F1 macro {fila['f1_macro']:.3f}), se reutiliza")
+            else:
+                extra = train_df[train_df["label"] == minoritaria].sample(n_extra, replace=True, random_state=semilla)
+                tr = pd.concat([train_df, extra], ignore_index=True)
+                t0 = time.time()
+                m = train_model(hp, tr, val_df, li, epocas, True, epocas_ft, verbose, weight_df=train_df,
+                                img_size=(tam, tam), seed=semilla)
+                p = predecir(m, hp, val_df, li, tam)
+                m.save(ruta_m)
+                np.save(ruta_p, p)
+                fila = {"tamano": tam, "semilla": semilla, "segundos": round(time.time() - t0), **metricas(p, val_df, li)}
+                ruta_f.write_text(json.dumps(fila))                          # al final: su existencia marca "completa"
+                print(f"[{hechas}/{total}] tamaño {tam} semilla {semilla}: F1 macro {fila['f1_macro']:.3f}  "
+                      f"exactitud {fila['accuracy']:.3f}  ({fila['segundos'] // 60} min)")
+                tf.keras.backend.clear_session()
             probs_tam.append(p)
-            filas.append({"tamano": tam, "semilla": semilla, "segundos": round(time.time() - t0), **metricas(p, val_df, li)})
-            print(f"tamaño {tam} semilla {semilla}: F1 macro {filas[-1]['f1_macro']:.3f}  exactitud {filas[-1]['accuracy']:.3f}")
-            tf.keras.backend.clear_session()
+            filas.append(fila)
         por_tamano[tam] = probs_tam
     corridas = pd.DataFrame(filas)
     resumen = corridas.groupby("tamano").agg(
@@ -76,6 +99,36 @@ def correr_rejilla(hp, train_df, val_df, li, tamanos=(224, 320, 448), semillas=(
     resumen["f1_conjunto"] = [metricas(np.mean(por_tamano[t], axis=0), val_df, li)["f1_macro"] for t in resumen.index]
     resumen["acc_conjunto"] = [metricas(np.mean(por_tamano[t], axis=0), val_df, li)["accuracy"] for t in resumen.index]
     return corridas, resumen
+
+
+def finalizar(hp, train_df, val_df, test_df, li, resumen, semillas, dir_modelos=None, out_dir=None, tamano_final=None):
+    """Arma el conjunto de modelos del mejor tamaño, lo evalúa UNA vez en test y lo exporta para la web.
+
+    Devuelve un diccionario con el tamaño elegido, probabilidades, métricas, carpeta de salida y versión.
+    """
+    from datetime import date
+
+    dir_modelos = carpeta_checkpoints(dir_modelos)
+    out_dir = Path(out_dir or config.ROOT / "web" / "model")
+    mejor = int(resumen["f1_conjunto"].idxmax()) if tamano_final is None else int(tamano_final)
+    modelos = [tf.keras.models.load_model(dir_modelos / f"m_{mejor}_s{s}.keras") for s in semillas]
+    ens = ensamblar(modelos, mejor)
+    p_val = predecir(ens, hp, val_df, li, mejor)
+    p_test = predecir(ens, hp, test_df, li, mejor)
+    y_val, y_test = val_df["label"].map(li).values, test_df["label"].map(li).values
+    res = {"val": metricas(p_val, val_df, li), "test": metricas(p_test, test_df, li)}
+    version = f"ens{len(semillas)}-{mejor}px-{date.today().isoformat()}"
+    from . import export
+
+    out = export.export_model(ens, li, hp, res, out_dir, version=version, input_size=mejor,
+                              notas={"arquitectura": f"conjunto de {len(semillas)} modelos MobileNetV2 (semillas {list(semillas)})"})
+    onnx_path = export.export_onnx(ens, out)
+    dif = export.verificar_onnx(ens, onnx_path)
+    (out / "paridad.json").write_text(json.dumps(export.casos_paridad(ens, hp, li, test_df), indent=2))
+    web = resumen_para_web(p_val, y_val, p_test, y_test, li, version)
+    (out / "metricas_web.json").write_text(json.dumps(web, ensure_ascii=False, indent=2))
+    return {"mejor": mejor, "p_val": p_val, "p_test": p_test, "y_val": y_val, "y_test": y_test,
+            "metricas": res, "out": out, "version": version, "diferencia_onnx": dif}
 
 
 def simular_combinacion(probs: np.ndarray, y: np.ndarray, ks=(1, 2, 3), intentos: int = 4000, semilla: int = 0) -> dict:
