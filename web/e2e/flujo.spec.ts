@@ -106,6 +106,8 @@ test('varias hojas de la misma planta: se combinan y se muestra cada una', async
   await expect(page.getByText(/Hoja 2:/)).toBeVisible();
   const valores = await page.locator('.barras .valor').allInnerTexts();
   expect(valores.map((v) => parseInt(v, 10)).reduce((a, b) => a + b, 0)).toBe(100);
+  // Se espera a que termine la animación de entrada (opacidad): si no, axe mide contraste a medio aparecer.
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'));
   const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([]);
   await page.getByRole('button', { name: /otra planta/ }).click();
